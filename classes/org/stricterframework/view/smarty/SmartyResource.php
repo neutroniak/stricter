@@ -21,14 +21,14 @@ class SmartyResource extends Smarty implements Resource, ViewHandler
 
 		if($this->_version){
 			$this->version=preg_replace('/[^0-9\.]/','',$this->_version);
-			$config['templatesDir'] ? $this->template_dir=$config['templatesDir'] : $this->template_dir=$themeDefaultDir.'templates';
+			$config['templateDir'] ? $this->template_dir=$config['templateDir'] : $this->template_dir=$themeDefaultDir.'templates';
 			$config['compileDir'] ? $this->compile_dir=$config['compileDir'] : $this->compile_dir=$themeDefaultDir.'templates_c';
 			$config['configDir'] ? $this->config_dir=$config['configDir'] : $this->config_dir=$themeDefaultDir.'config';
 			$config['cacheDir'] ? $this->cache_dir=$config['cacheDir'] : $this->cache_dir=$themeDefaultDir.'cache';
 		} else {
 			$this->version=self::SMARTY_VERSION;
 			$this->version=preg_replace('/[^0-9\.]/','',self::SMARTY_VERSION);
-			$config['templatesDir'] ? $this->setTemplateDir($config['templatesDir']) : $this->setTemplateDir($themeDefaultDir.'templates');
+			$config['templateDir'] ? $this->setTemplateDir($config['templateDir']) : $this->setTemplateDir($themeDefaultDir.'templates');
 			$config['compileDir'] ? $this->setCompileDir($config['compileDir']) : $this->setCompileDir($themeDefaultDir.'templates_c');
 			$config['configDir'] ? $this->setConfigDir($config['configDir']) : $this->setConfigDir($themeDefaultDir.'config');
 			$config['cacheDir'] ? $this->setCacheDir($config['cacheDir']): $this->setCacheDir($themeDefaultDir.'cache');
