@@ -177,7 +177,9 @@ class SmartyResource extends Smarty implements Resource, ViewHandler
 		case "registerPlugin":
 			if($args[0]=="function")
 				$this->register_function($args[1], $args[2]);
-			else
+			else if($args[0]=="modifier")
+				$this->register_modifier($args[1], $args[2]);
+			else if($args[0]=="block")
 				$this->register_block($args[1], $args[2]);
 		break;
 		case "clearAllCache":
