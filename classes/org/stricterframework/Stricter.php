@@ -224,7 +224,8 @@ class Stricter
 
 			}
 			$trace .= '  URI: '.$_SERVER["REQUEST_URI"]."\n";
-			$trace .= '  Referer: '.$_SERVER["HTTP_REFERER"].', from remote addr: '.$_SERVER["REMOTE_ADDR"]."\n";
+			if(isset($_SERVER['HTTP_REFERER']))
+				$trace .= '  Referer: '.$_SERVER["HTTP_REFERER"].', from remote addr: '.$_SERVER["REMOTE_ADDR"]."\n";
 			$trace .= '  User-Agent: '.$_SERVER["HTTP_USER_AGENT"]."\n";
 			error_log($fmessage.$trace, 3, $logdir.'/stricter-'.$datefile.'.log');
 		}
