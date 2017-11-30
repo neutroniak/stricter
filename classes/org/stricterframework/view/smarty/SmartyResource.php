@@ -5,7 +5,8 @@ require_once('Smarty.class.php');
 class SmartyResource extends Smarty implements Resource, ViewHandler
 {
 	public $config=array();
-	private $display='index.tpl';
+	private $extension = '.tpl';
+	private $display;
 	private $theme;
 	private $template;
 	private $cacheId=null;
@@ -16,6 +17,8 @@ class SmartyResource extends Smarty implements Resource, ViewHandler
 		parent::__construct();
 
 		$this->config=&$config;
+
+		$this->display = 'index'.$this->extension;
 
 		$themeDefaultDir= Stricter::getInstance()->getConfig('themes_dir').DIRECTORY_SEPARATOR.Stricter::getInstance()->getConfig('theme').DIRECTORY_SEPARATOR;
 
@@ -32,6 +35,7 @@ class SmartyResource extends Smarty implements Resource, ViewHandler
 			$config['compileDir'] ? $this->setCompileDir($config['compileDir']) : $this->setCompileDir($themeDefaultDir.'templates_c');
 			$config['configDir'] ? $this->setConfigDir($config['configDir']) : $this->setConfigDir($themeDefaultDir.'config');
 			$config['cacheDir'] ? $this->setCacheDir($config['cacheDir']): $this->setCacheDir($themeDefaultDir.'cache');
+			$config['extension'] ? $this->extension=$config['extension']: $this->extension='.tpl';
 		}
 		$stricter=&Stricter::getInstance();
 		$cfg = $stricter->getConfig();
@@ -97,17 +101,17 @@ class SmartyResource extends Smarty implements Resource, ViewHandler
 
 	public function getDisplay() {return $this->display;}
 	public function setDisplay($display, $type=Stricter::OUT_HTML){
-		$this->display=$display.'.tpl';
+		$this->display=$display.$this->extension;
 		Stricter::getInstance()->setContentType($type);
 		if($type===Stricter::OUT_AJAX && strtolower(Stricter::getInstance()->getConfig('charset'))!='utf-8')
 			array_walk_recursive($_POST,array(&$this, 'iconvAjax'));
 	}
 	public function getTemplate() { return $this->template; }
-	public function setTemplate($template) { $this->template=$template.'.tpl'; }
+	public function setTemplate($template) { $this->template=$template.$this->extension; }
 	public function getCacheId() {return $this->cacheId;}
 	public function getTheme() { return $this->theme; }
 	public function setTheme($theme) { $this->theme=$theme; }
-	public function fetchTemplate($val) { return $this->fetch($val.'.tpl'); }
+	public function fetchTemplate($val) { return $this->fetch($val.$this->extension); }
 
     public function select($varname, $sql, $is_html_options=false, $sql_assoc=DatabaseInterface::STRICTER_DB_SQL_ASSOC, &$dbinstance=null) {
 		if($dbinstance==null) {
