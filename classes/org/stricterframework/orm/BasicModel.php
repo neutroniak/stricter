@@ -38,7 +38,7 @@ class BasicModel
 			if($v instanceof BasicType) {
 				$hash='_'.sha1($this->_name.'.'.$v->getName().'.'.$this->_alias);
 				$v->setHash($hash);
-				if($_POST[$hash] || $_FILES[$hash])
+				if($_POST[$hash]!==NULL || $_FILES[$hash]!==NULL)
 					$v->filterPost($_POST[$hash]);
 			}
 		}

@@ -35,7 +35,7 @@ class NumericType extends BasicType
 			return 0;
 		}
 
-		if($this->getRequired() && trim($this->getValue())=='')
+		if($this->getRequired() && trim($this->getValue())==null)
 			$this->setError( LANG_REQUIRED_FIELD_ERROR );
 
 		/*
