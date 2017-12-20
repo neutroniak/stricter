@@ -5,7 +5,7 @@ require_once('Smarty.class.php');
 class SmartyResource extends Smarty implements Resource, ViewHandler
 {
 	public $config=array();
-	private $extension = '.tpl';
+	private $extension;
 	private $display;
 	private $theme;
 	private $template;
@@ -18,8 +18,6 @@ class SmartyResource extends Smarty implements Resource, ViewHandler
 
 		$this->config=&$config;
 
-		$this->display = 'index'.$this->extension;
-
 		$themeDefaultDir= Stricter::getInstance()->getConfig('themes_dir').DIRECTORY_SEPARATOR.Stricter::getInstance()->getConfig('theme').DIRECTORY_SEPARATOR;
 
 		if($this->_version){
@@ -28,6 +26,7 @@ class SmartyResource extends Smarty implements Resource, ViewHandler
 			$config['compileDir'] ? $this->compile_dir=$config['compileDir'] : $this->compile_dir=$themeDefaultDir.'templates_c';
 			$config['configDir'] ? $this->config_dir=$config['configDir'] : $this->config_dir=$themeDefaultDir.'config';
 			$config['cacheDir'] ? $this->cache_dir=$config['cacheDir'] : $this->cache_dir=$themeDefaultDir.'cache';
+			$config['extension'] ? $this->extension=$config['extension']: $this->extension='.tpl';
 		} else {
 			$this->version=self::SMARTY_VERSION;
 			$this->version=preg_replace('/[^0-9\.]/','',self::SMARTY_VERSION);
@@ -37,7 +36,11 @@ class SmartyResource extends Smarty implements Resource, ViewHandler
 			$config['cacheDir'] ? $this->setCacheDir($config['cacheDir']): $this->setCacheDir($themeDefaultDir.'cache');
 			$config['extension'] ? $this->extension=$config['extension']: $this->extension='.tpl';
 		}
+
+		$this->display = 'index'.$this->extension;
+	
 		$stricter=&Stricter::getInstance();
+
 		$cfg = $stricter->getConfig();
 		if($cfg['desenv']===false) {
 			$this->force_compile=false;
