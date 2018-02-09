@@ -29,13 +29,13 @@ class MailResource implements Resource
 			(
 				'smtp',
 				array ( 
-				'auth'=>true,
-				'host'=>$this->host,
-				'localhost'=>$this->host,
-				'username'=>$this->username,
-				'password'=>$this->password,
-				'port'=>$this->port,
-				'socket_options'=>array('ssl' => array('verify_peer_name' => false))
+					'auth'=>true,
+					'host'=>$this->host,
+					'localhost'=>$this->host,
+					'username'=>$this->username,
+					'password'=>$this->password,
+					'port'=>$this->port,
+					'socket_options'=>$this->socket_options
 				)
 		);
 	}
