@@ -12,6 +12,7 @@ class MailResource implements Resource
 	private $alias;
 	private $smtp;
 	private $error;
+	private $socket_options;
 
 	function __construct(&$config) {
 		$this->config=&$config;
@@ -20,6 +21,9 @@ class MailResource implements Resource
 		$this->port=$config['port'];
 		$this->username=$config['username'];
 		$this->password=$config['password'];
+
+		if($config['socket_options'])
+			$this->socket_options = $config['socket_options'];
 
 		$this->smtp =& Mail::factory
 			(
@@ -30,7 +34,8 @@ class MailResource implements Resource
 				'localhost'=>$this->host,
 				'username'=>$this->username,
 				'password'=>$this->password,
-				'port'=>$this->port
+				'port'=>$this->port,
+				'socket_options'=>array('ssl' => array('verify_peer_name' => false))
 				)
 		);
 	}
