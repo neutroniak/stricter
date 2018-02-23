@@ -52,6 +52,8 @@ class Stricter
 
 		ini_set("date.timezone", $this->config['timezone']);
 
+		setlocale(LC_ALL, $this->config['locale']);
+	
 		Stricter::$instance=&$this;
 
 		set_error_handler( array($this, 'setErrorHandler') );
@@ -128,7 +130,6 @@ class Stricter
 
 		if($inc) {
 
-			setlocale(LC_ALL, $this->config['locale']);
 			include_once($this->config['languages_dir'].'/'.$this->config['locale'].'.'.$this->config['charset'].'/index.php'); #NLS common (required)
 
 			$obj = new $sobj();
