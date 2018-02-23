@@ -288,6 +288,12 @@ class BasicModel
 	public function insert()
 	{
 		$db=Stricter::getInstance()->inject( Stricter::getInstance()->getDefaultDatabaseId() );
+
+		if(!$db) {
+			Stricter::getInstance()->log('Database was not initialized..');
+			return null;
+		}
+
 		$entity_name = $this->getName();
 
 		$a_pk = $this->getPrimaryKey();
@@ -321,6 +327,12 @@ class BasicModel
 	public function update()
 	{
 		$db=Stricter::getInstance()->inject( Stricter::getInstance()->getDefaultDatabaseId() );
+
+		if(!$db) {
+			Stricter::getInstance()->log('Database was not initialized..');
+			return null;
+		}
+
 		$a_pk = $this->getPrimaryKey();
 
 		$entity_name = $this->getName();
@@ -363,6 +375,12 @@ class BasicModel
 	public function delete()
 	{
 		$db=Stricter::getInstance()->inject( Stricter::getInstance()->getDefaultDatabaseId() );
+	
+		if(!$db) {
+			Stricter::getInstance()->log('Database was not initialized..');
+			return null;
+		}
+
 		$a_pk = $this->getPrimaryKey();
 
 		$entity_name = $this->getName();
@@ -468,6 +486,11 @@ class BasicModel
 	private function checkUniqueKeys()
 	{
 		$db=Stricter::getInstance()->inject( Stricter::getInstance()->getDefaultDatabaseId() );
+
+		if(!$db) {
+			Stricter::getInstance()->log('Database was not initialized..');
+			return null;
+		}
 		if( count($this->_uniqueKeys)==0 )
 			return;
 
