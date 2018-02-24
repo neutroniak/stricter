@@ -2,7 +2,7 @@
 
 abstract class BasicPlugin
 {
-	//common attributes for almost all forms
+	//common attributes for almost all plugins
 	public $attributes = array( 'name', 'csserror' );
 	private $objvar;
 	private $params;

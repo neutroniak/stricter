@@ -1,24 +1,21 @@
 <?php
 
-class FCKEditorForm extends BasicForm
+class FCKEditorPlugin extends BasicPlugin
 {
 	private $objvar;
 	private $params;
 
-	function __construct()
+	function __init()
 	{
-		Stricter::getSmarty()->register_function("fckeditor", array(&$this,"fckeditor"));
-
-		//$this->addAttribute( 'fckpath' );
+		$this->smarty->registerPlugin("function", "fckeditor", array(&$this,"fckeditor") );
 	}
 
-	#=========================================================================
 	function fckeditor($params, &$smarty)
 	{
-		if(! Stricter::getConfig('fckpath') )
+		if(! Stricter::getInstance()->getConfig('fckpath') )
 			return "fck needs a path";
 		else 
-			$fckpath = Stricter::getConfig('fckpath');
+			$fckpath = Stricter::getInstance()->getConfig('fckpath');
 
 		$objvar=&$params['name'];
 

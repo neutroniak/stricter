@@ -2,25 +2,22 @@
 
 require_once("Text/CAPTCHA.php");
 
-class CaptchaForm extends BasicForm
+class CaptchaPlugin extends BasicPlugin
 {
 	private $objvar;
 	private $params;
 	
-	function __construct()
+	function __init()
 	{
-		Stricter::getSmarty()->register_function("captcha", array(&$this, "captcha"));
-		
+		$this->smarty->registerPlugin('function', "captcha", array(&$this,"captcha"));
+
 		$this->addAttribute( 'dir' );
 		$this->addAttribute( 'fontfile' );
 		$this->addAttribute( 'fontsize' );
 	}
 
-	#=========================================================================
 	function captcha($params, &$smarty)
 	{
-		//$ex = explode(':', $params["name"]);
-
 		$params["fontfile"] ? $font_file = $params["fontfile"] : $font_file =  'Vera.ttf';
 		$params["fontsize"] ? $font_size = $params["fontsize"] : $font_size =  16;
 
@@ -29,11 +26,6 @@ class CaptchaForm extends BasicForm
 			'font_path'	=> Stricter::getConfig('stricter_rpath').'/stricter/fonts/',
 			'font_file'	=> $font_file
 		);
-		
-		//$ent		= $ex[0];
-		//$field	= $ex[1];
-		
-		//$objvar =& Stricter::$models[$ent]->$field;
 		
 		$objvar = null;
 

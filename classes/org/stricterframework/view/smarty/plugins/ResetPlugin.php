@@ -1,10 +1,12 @@
 <?php
 
-class ResetForm extends BasicForm
+class ResetPlugin extends BasicPlugin
 {
+	public $smarty;
+	private $objvar;
 	private $params;
 
-	function __construct()
+	function __init()
 	{
 		$this->smarty->registerPlugin("function", "reset", array(&$this,"reset"));
 	}
