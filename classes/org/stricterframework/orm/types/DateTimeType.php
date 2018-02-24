@@ -1,10 +1,13 @@
 <?php
 
-class DateType extends BasicType
+class DateTimeType extends BasicType
 {
 	private $year;
 	private $month;
 	private $day;
+	private $hour;
+	private $minute;
+	private $second;
 	private $format;
 	private $dateValue;
 
@@ -13,17 +16,20 @@ class DateType extends BasicType
 		$this->setSize($size);	
 	}
 
-	// format yyyy-mm-dd
+	// format yyyy-mm-dd hh:mm:ss
 	public function setValue($newval){
 
 		if(is_array($newval)){
 			$this->year=$newval['year'];
 			$this->month=$newval['month'];
 			$this->day=$newval['day'];
-			$this->_value=$this->year.'-'.$this->month.'-'.$this->day;
+			$newval['hour'] ? $this->hour=$newval['hour'] : $this->hour='00';
+			$newval['minute'] ? $this->minute=$newval['minute'] : $this->minute='00';
+			$newval['second'] ? $this->second=$newval['second'] : $this->second='00';
+			$this->_value=$this->year.'-'.$this->month.'-'.$this->day.' '.$this->hour.':'.$this->minute.':'.$this->second;
 		} else {
 			if(($format=Stricter::getInstance()->getConfig('date_format'))=="")
-				$format="Y-m-d";
+				$format="Y-m-d H:i:s";
 			$date = DateTime::createFromFormat($format, $newval);
 			if(!$date){
 				Stricter::getInstance()->log("DateType error: could not recognize date value: ".$newval);
@@ -32,7 +38,10 @@ class DateType extends BasicType
 			$this->year=$date->format('Y');
 			$this->month=$date->format('m');
 			$this->day=$date->format('d');
-			$this->_value=$this->year.'-'.$this->month.'-'.$this->day;
+			$this->hour=$date->format('H');
+			$this->minute=$date->format('i');
+			$this->second=$date->format('s');
+			$this->_value=$this->year.'-'.$this->month.'-'.$this->day.' '.$this->hour.':'.$this->minute.':'.$this->second;
 		} 
 	}
 
@@ -62,7 +71,7 @@ class DateType extends BasicType
 	}
 
 	function setNow(){
-		$this->setValue(date('Y-m-d'));
+		$this->setValue(date('Y-m-d H:i:s'));
 	}
 
 	function __get($field){

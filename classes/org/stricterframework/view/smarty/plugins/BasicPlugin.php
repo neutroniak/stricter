@@ -3,7 +3,7 @@
 abstract class BasicPlugin
 {
 	//common attributes for almost all forms
-	public $attributes = array( 'name', 'csserror', 'jsmin', 'jsminlen', 'jsreq', 'jsemail', 'jsselone', 'jsnum' );
+	public $attributes = array( 'name', 'csserror' );
 	private $objvar;
 	private $params;
 	
@@ -15,29 +15,11 @@ abstract class BasicPlugin
 	
 	function jsvalid()
 	{
-		if($this->objvar instanceof DateField || $this->objvar instanceof DatetimeField)
-			$hash = $this->objvar->getHash().'['.$this->params["field"].']';
-		else
-			$hash = $this->objvar->getHash();
+		$hash = $this->objvar->getHash();
 		
 		if($this->params["slice"])
 			$hash .= '_'.$this->params["slice"];
 			
-		if($this->params["jsreq"])
-			$str .="<script type=\"text/javascript\">frmvalidator.addValidation(\"".$hash."\",\"req\",'".$this->params["jsreq"]."');</script>";
-
-		if($this->params["jsnum"])
-			$str .="<script type=\"text/javascript\">frmvalidator.addValidation(\"".$hash."\",\"num\",'".$this->params["jsnum"]."');</script>";
-
-		if($this->params["jsemail"])
-			$str .="<script type=\"text/javascript\">frmvalidator.addValidation(\"".$hash."\",\"email\",'".$this->params["jsemail"]."');</script>";
-
-		if($this->params["jsmin"])
-			$str .="<script type=\"text/javascript\">frmvalidator.addValidation(\"".$hash."\",\"minlen=".$this->params["jsminlen"]."\",'".$this->params["jsmin"]."');</script>";
-
-		if($this->params["jsselone"])
-			$str .="<script type=\"text/javascript\">frmvalidator.addValidation(\"".$hash."\",\"selone\",'".$this->params["jsselone"]."');</script>";
-		
 		return $str;
 	}
 

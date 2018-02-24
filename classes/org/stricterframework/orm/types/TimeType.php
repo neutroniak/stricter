@@ -1,10 +1,10 @@
 <?php
 
-class DateType extends BasicType
+class TimeType extends BasicType
 {
-	private $year;
-	private $month;
-	private $day;
+	private $hour;
+	private $minute;
+	private $second;
 	private $format;
 	private $dateValue;
 
@@ -13,26 +13,28 @@ class DateType extends BasicType
 		$this->setSize($size);	
 	}
 
-	// format yyyy-mm-dd
+	// format hh:mm:ss
 	public function setValue($newval){
 
 		if(is_array($newval)){
-			$this->year=$newval['year'];
-			$this->month=$newval['month'];
-			$this->day=$newval['day'];
-			$this->_value=$this->year.'-'.$this->month.'-'.$this->day;
+			$newval['hour'] ? $this->hour=$newval['hour'] : $this->hour='00';
+			$newval['minute'] ? $this->minute=$newval['minute'] : $this->minute='00';
+			$newval['second'] ? $this->second=$newval['second'] : $this->second='00';
+			$this->_value=$this->hour.':'.$this->minute.':'.$this->second;
 		} else {
-			if(($format=Stricter::getInstance()->getConfig('date_format'))=="")
-				$format="Y-m-d";
+			if(($format=Stricter::getInstance()->getConfig('time_format'))=="")
+				$format="H:i:s";
 			$date = DateTime::createFromFormat($format, $newval);
+
 			if(!$date){
-				Stricter::getInstance()->log("DateType error: could not recognize date value: ".$newval);
+				Stricter::getInstance()->log("TimeType error: could not recognize date value: ".$newval);
 				return null;
 			}
-			$this->year=$date->format('Y');
-			$this->month=$date->format('m');
-			$this->day=$date->format('d');
-			$this->_value=$this->year.'-'.$this->month.'-'.$this->day;
+
+			$this->hour=$date->format("H");
+			$this->minute=$date->format("i");
+			$this->second=$date->format("s");
+			$this->_value=$this->hour.':'.$this->minute.':'.$this->second;
 		} 
 	}
 
@@ -42,7 +44,8 @@ class DateType extends BasicType
 	}
 
 	function isValid(){
-		$isdate = checkdate($this->month, $this->day, $this->year);
+
+		$istime=true;
 		if($this->getRequired()===true && $this->getValue()===null) {
 			if($this->_default){
 				$this->_value=$this->default;
@@ -53,8 +56,8 @@ class DateType extends BasicType
 			}
 		}
 
-		if($this->getValue()!=null && !$isdate) {
-			$this->setError( LANG_INVALID_DATE_ERROR );
+		if($this->getValue()!=null && !$istime) {
+			$this->setError( LANG_INVALID_TIME_ERROR );
 			return 1;
 		}
 		
@@ -62,7 +65,7 @@ class DateType extends BasicType
 	}
 
 	function setNow(){
-		$this->setValue(date('Y-m-d'));
+		$this->setValue(date('H:i:s'));
 	}
 
 	function __get($field){

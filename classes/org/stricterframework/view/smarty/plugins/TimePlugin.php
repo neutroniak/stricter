@@ -1,31 +1,28 @@
 <?php
 
-class DatePlugin extends BasicPlugin
+class TimePlugin extends BasicPlugin
 {
 	public $stricter;
 	public $smarty;
 	private $objvar;
 	private $params;
 	private $field;
-	private $months;
-	private $minyear;
-	private $maxyear;
 
 	function __init()
 	{
-		$this->smarty->registerPlugin('function', "date", array(&$this,"date"));
+		$this->smarty->registerPlugin('function', "time", array(&$this,"time"));
 
 		$this->addAttribute( 'field' );
 		$this->addAttribute( 'months' );
-		$this->addAttribute( 'minyear' );
-		$this->addAttribute( 'maxyear' );
 		$this->addAttribute( 'offset' );
 		$this->addAttribute( 'limit' );
 		$this->addAttribute( 'empty' );
+		$this->addAttribute( 'interval' );
+		$this->addAttribute( 'format' );
 		$this->addAttribute( 'string' );
 	}
 
-	function date($params, &$smarty)
+	function time($params, &$smarty)
 	{
 		$objvar=&$params['name'];
 
@@ -33,6 +30,8 @@ class DatePlugin extends BasicPlugin
 
 		if($params['field']){
 			$str.=$this->selectBox($params, $objvar);
+		} else if($params['interval']) {
+			$str.=$this->optionsBox($params,$objvar);
 		} else {
 			$str.=$this->inputBox($params,$objvar);
 		}
@@ -54,31 +53,6 @@ class DatePlugin extends BasicPlugin
 
 		switch($params["field"])
 		{
-			case "day":
-				$rangeb = 1;
-				$rangee = 31;
-			break;
-
-			case "month":
-				$rangeb = 1 + $params['offset'];
-				$rangee = 12 + $params['offset']  - $params['limit'];
-				if($params['months'])
-					$arrmonths = $params['months'];
-			break;
-
-			case 'year':
-				if($params["minyear"])
-					$rangeb = $params["minyear"];
-				else
-					$rangeb = 1902;
-
-				if($params["maxyear"])
-					$rangee = $params["maxyear"];
-				else
-					$rangee = date('Y');
-				
-			break;
-
 			case 'hour':
 				$rangeb = 0;
 				$rangee = 23;
@@ -113,6 +87,47 @@ class DatePlugin extends BasicPlugin
 		$str .= "</select>";
 		return $str;
 	}
+
+	private function optionsBox(&$params, &$objvar) {
+
+		$str .= "<select name=\"".$objvar->getHash()."\" ";
+
+		$str .= parent::csserror();
+
+		$str .= parent::attributes();
+
+		$str .= ">";
+
+		$st=&Stricter::getInstance();		
+	
+		$date = DateTime::createFromFormat($st->getConfig('time_format'), '00:00:00');
+
+		$params['interval'] ? $interval=$params['interval'] : $interval="PT30M";
+
+		$params['format'] ? $format=$params['format'] : $format="H:i:s";
+
+		$intervalobj = new DateInterval($interval);
+
+		$str .= "<option value=\"".$date->format('H:i:s')."\">".$date->format($format)."</option>";
+
+		while(1) {
+			$date->add($intervalobj);
+
+			if( $date->format('H')=="00" && $date->format('i')=="00")
+				break;
+
+			if($objvar->getValue()==$date->format('H').':'.$date->format('i').':'.$date->format('s'))
+				$selected='selected="selected"';
+			else
+				$selected="";
+			$str .= "<option $selected value=\"".$date->format('H:i:s')."\">".$date->format($format)."</option>";
+		}
+
+		$str .= "</select>";
+		return $str;
+	}
+
+
 
 	private function inputBox(&$params, &$objvar){
 		$str = "<input type=\"text\" ";
