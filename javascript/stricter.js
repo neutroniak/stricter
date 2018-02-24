@@ -131,11 +131,6 @@ Ajax.prototype.execute = function()
 	this.ajaxobj.open(this.method, this.url, this.async);
 
 	this.ajaxobj.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-	if(parameters)
-		this.ajaxobj.setRequestHeader("Content-length", this.url.length + parameters.length);
-	else
-		this.ajaxobj.setRequestHeader("Content-length", this.url.length);
-	this.ajaxobj.setRequestHeader("Connection", "close");
 	this.ajaxobj.send(parameters);
 	this.formid=null;
 }
