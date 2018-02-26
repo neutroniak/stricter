@@ -27,7 +27,7 @@ class TimeType extends BasicType
 			$date = DateTime::createFromFormat($format, $newval);
 
 			if(!$date){
-				Stricter::getInstance()->log("TimeType error: could not recognize date value: ".$newval);
+				Stricter::getInstance()->log("DateType error: could not recognize date value: ".$newval.' using format:'.$format);
 				return null;
 			}
 

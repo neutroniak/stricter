@@ -32,7 +32,7 @@ class DateTimeType extends BasicType
 				$format="Y-m-d H:i:s";
 			$date = DateTime::createFromFormat($format, $newval);
 			if(!$date){
-				Stricter::getInstance()->log("DateType error: could not recognize date value: ".$newval);
+				Stricter::getInstance()->log("DateType error: could not recognize date value: ".$newval.' using format:'.$format);
 				return null;
 			}
 			$this->year=$date->format('Y');
