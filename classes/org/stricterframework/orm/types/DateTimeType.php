@@ -28,7 +28,7 @@ class DateTimeType extends BasicType
 			$newval['second'] ? $this->second=$newval['second'] : $this->second='00';
 			$this->_value=$this->year.'-'.$this->month.'-'.$this->day.' '.$this->hour.':'.$this->minute.':'.$this->second;
 		} else {
-			if(($format=Stricter::getInstance()->getConfig('date_format'))=="")
+			if(($format=Stricter::getInstance()->getConfig('datetime_format'))=="")
 				$format="Y-m-d H:i:s";
 			$date = DateTime::createFromFormat($format, $newval);
 			if(!$date){
