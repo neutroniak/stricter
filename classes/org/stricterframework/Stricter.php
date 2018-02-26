@@ -217,7 +217,7 @@ class Stricter
 
 			$fmessage .= ' '.$message;
 			$trace=null;
-			if($dotrace) {
+			if($dotrace || $this->config['log_trace']===true) {
 				$ar = debug_backtrace();
 				foreach($ar as $k=>$v)
 					if($ar[$k]["file"] && $ar[$k]["function"]!="")
