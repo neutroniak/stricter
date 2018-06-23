@@ -206,6 +206,10 @@ class DatabasePostgresql implements DatabaseInterface
 		$this->debug=$dbg;
 	}
 
+	function setDbPort($port) {
+		$this->port=$port;
+	}
+
 	function getDbCase() {
 		return $this->dbcase;
 	}
