@@ -468,6 +468,11 @@ class BasicModel
 	private function checkUniqueKeys()
 	{
 		$db=Stricter::getInstance()->inject( Stricter::getInstance()->getDefaultDatabaseId() );
+
+		if(!$db) {
+			return null;
+		}
+
 		if( count($this->_uniqueKeys)==0 )
 			return;
 
