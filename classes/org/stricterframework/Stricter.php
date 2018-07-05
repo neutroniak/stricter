@@ -65,9 +65,9 @@ class Stricter
 		if($this->resourceObjects[$name]) {
 			return $this->resourceObjects[$name];
 		} else {
-			require_once( $this->resources[$name]['class'].'.php' );
-			$str = substr( strrchr($this->resources[$name]['class'], DIRECTORY_SEPARATOR), 1);
-			$res = new $str( $this->resources[$name], $name );
+			require_once($this->resources[$name]['class'].'.php');
+			$str = substr(strrchr($this->resources[$name]['class'], DIRECTORY_SEPARATOR), 1);
+			$res = new $str($this->resources[$name], $name);
 
 			$realres =null;
 
