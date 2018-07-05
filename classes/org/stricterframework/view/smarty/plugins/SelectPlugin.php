@@ -36,6 +36,8 @@ class SelectPlugin extends BasicPlugin
 			$multiple = ' multiple="multiple" ';
 		}
 
+		
+
 		$str .= parent::csserror();
 
 		$str .= parent::attributes();

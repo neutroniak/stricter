@@ -30,6 +30,10 @@ class DateTimeType extends BasicType
 		} else {
 			if(($format=Stricter::getInstance()->getConfig('datetime_format'))=="")
 				$format="Y-m-d H:i:s";
+
+			$ts = 1414706400;
+			$date1 = date($format, $ts);
+			$newval=substr($newval,0,strlen($date1));
 			$date = DateTime::createFromFormat($format, $newval);
 			if(!$date){
 				Stricter::getInstance()->log("DateType error: could not recognize date value: ".$newval.' using format:'.$format);

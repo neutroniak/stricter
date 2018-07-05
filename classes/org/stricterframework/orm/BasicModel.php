@@ -488,7 +488,6 @@ class BasicModel
 		$db=Stricter::getInstance()->inject( Stricter::getInstance()->getDefaultDatabaseId() );
 
 		if(!$db) {
-			Stricter::getInstance()->log('Database was not initialized..');
 			return null;
 		}
 		if( count($this->_uniqueKeys)==0 )
