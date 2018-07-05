@@ -4,7 +4,6 @@ include_once("org/stricterframework/Database.php");
 
 class DatabaseMysql extends Database
 {
-	//=========================================================================
 	function __construct($dbhost, $dbuser, $dbpass, $dbname)
 	{
 		$this->dbhost = $dbhost;
@@ -15,7 +14,6 @@ class DatabaseMysql extends Database
 		$this->dbtype = 'mysql';
 	}
 
-	//=========================================================================
 	function connect()
 	{
 		$conn = mysql_connect($this->dbhost.':'.$this->dbport, $this->dbuser, $this->dbpass);
@@ -32,7 +30,6 @@ class DatabaseMysql extends Database
 		return $conn;
 	}
 	
-	//=========================================================================
 	function query($sql)
 	{
 		$this->sqlStatement = $sql;
@@ -52,7 +49,6 @@ class DatabaseMysql extends Database
 			return $q;
 	}
 	
-	//=========================================================================
 	function numrows(&$resource)
 	{
 		$n = mysql_num_rows($resource);
@@ -60,7 +56,6 @@ class DatabaseMysql extends Database
 		return $n;
 	}
 	
-	//=========================================================================
 	function fetch(&$query, $sql_assoc=Database::STRICTER_DB_SQL_ASSOC)
 	{
 		$r = mysql_fetch_array($query, $sql_assoc);
@@ -68,13 +63,11 @@ class DatabaseMysql extends Database
 		return $r;
 	}
 
-	//=========================================================================
 	function free(&$query)
 	{
 		mysql_free_result($query);
 	}
 
-	//=========================================================================
 	function last_insert_id($entity)
 	{
 		$sql_last_insert = "SELECT LAST_INSERT_ID() lid";
@@ -86,13 +79,11 @@ class DatabaseMysql extends Database
 		return $r["lid"];
 	}
 
-	//=========================================================================
 	function disconnect()
 	{
 		mysql_close($this->conn);
 	}
 
-	//=========================================================================
 	function escape_string($string_val)
 	{
 		$magic_quotes = ini_get('magic_quotes_gpc');
@@ -103,7 +94,6 @@ class DatabaseMysql extends Database
 		return $string_val;
 	}
 
-	//=========================================================================
 	public function error()
 	{
 		if(mysql_error())
@@ -112,7 +102,6 @@ class DatabaseMysql extends Database
 			return false;
 	}
 
-	//=====================================================================
 	public function transaction()
 	{
 		$this->query("SET AUTOCOMMIT = 0;");
@@ -120,19 +109,16 @@ class DatabaseMysql extends Database
 		$this->query("START TRANSACTION;");
 	}
 
-	//=====================================================================
 	public function commit()
 	{
 		$this->query("COMMIT;");
 	}
 	
-	//=====================================================================
 	public function rollback()
 	{
 		$this->query("ROLLBACK;");
 	}
 
-	#=======================================
 	function formatField($field)
 	{
 		$type=get_class($field);
