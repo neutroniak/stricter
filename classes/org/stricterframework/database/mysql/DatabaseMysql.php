@@ -1,9 +1,19 @@
 <?php
 
-include_once("org/stricterframework/Database.php");
-
-class DatabaseMysql extends Database
+class DatabaseMysql implements DatabaseInterface
 {
+	private $conn;
+	private $debug = false;
+	private $connected;
+	private $dbhost;
+	private $dbuser;
+	private $dbpass;
+	private $dbname;
+	private $dbcase;
+	private $dbport;
+	private $dbtype;
+	private $sqlStatement;
+
 	function __construct($dbhost, $dbuser, $dbpass, $dbname)
 	{
 		$this->dbhost = $dbhost;
@@ -23,9 +33,9 @@ class DatabaseMysql extends Database
 		$this->conn =& $conn;
 
 		if(!$this->conn)
-			$this->isConnected = false;
+			$this->connected = false;
 		else
-			$this->isConnected = true;
+			$this->connected = true;
 
 		return $conn;
 	}
@@ -68,7 +78,7 @@ class DatabaseMysql extends Database
 		mysql_free_result($query);
 	}
 
-	function last_insert_id($entity)
+	function lastInsertId($entity)
 	{
 		$sql_last_insert = "SELECT LAST_INSERT_ID() lid";
 
@@ -84,7 +94,7 @@ class DatabaseMysql extends Database
 		mysql_close($this->conn);
 	}
 
-	function escape_string($string_val)
+	function escapeString($string_val)
 	{
 		$magic_quotes = ini_get('magic_quotes_gpc');
 
@@ -140,6 +150,34 @@ class DatabaseMysql extends Database
 				break;
 			}			
 		}
+	}
+
+	function paginate(&$query, $limit, $offset) {
+		$query .= " LIMIT $limit OFFSET $offset";	
+		return $query;
+	}
+
+	function setDebug($dbg) {
+		$this->debug=$dbg;
+	}
+
+	function setDbPort($port) {
+		$this->port=$port;
+	}
+
+	function getDbCase() {
+		return $this->dbcase;
+	}
+
+	function getDbType() {
+		return $this->dbtype;
+	}
+	function getSqlStatement() {
+		return $this->sqlStatement;
+	}
+
+	function isConnected() {
+		return $connected;
 	}
 }
 
