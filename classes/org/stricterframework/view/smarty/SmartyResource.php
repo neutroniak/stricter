@@ -41,6 +41,10 @@ class SmartyResource extends Smarty implements Resource, ViewHandler
 	
 		$stricter=&Stricter::getInstance();
 
+		if($this->config['preloadPlugins']) 
+			foreach($config['preloadPlugins'] as $kp=>$vp)
+				$this->addPlugin($vp);
+
 		$cfg = $stricter->getConfig();
 		if($cfg['desenv']===false) {
 			$this->force_compile=false;
@@ -52,10 +56,7 @@ class SmartyResource extends Smarty implements Resource, ViewHandler
 	}
 
 	public function preloadPlugins(){
-		if($this->config['preloadPlugins']) {
-			foreach($this->config['preloadPlugins'] as $kp=>$vp)
-				$this->addPlugin($vp);
-		}
+		Stricter::getInstance()->log("SmartyResource->preloadPlugins() is deprecated.");
 	}
 
 	public function addPlugin($strcomponent){
