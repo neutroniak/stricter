@@ -2,7 +2,7 @@
 
 class NumericType extends BasicType
 {
-	public function __construct($name, $size=null) {
+	public function __construct($name, $size=null, $req=true, $def=null) {
 		$this->setName($name);
 		$this->setSize($size);	
 	}
