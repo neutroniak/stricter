@@ -2,7 +2,7 @@
 
 require_once('Smarty.class.php');
 
-class SmartyResource extends Smarty implements Resource, ViewHandler
+class SmartyResource extends Smarty implements Resource, ViewInterface
 {
 	public $config=array();
 	private $extension;
@@ -39,13 +39,11 @@ class SmartyResource extends Smarty implements Resource, ViewHandler
 
 		$this->display = 'index'.$this->extension;
 	
-		$stricter=&Stricter::getInstance();
-
 		if($this->config['preloadPlugins']) 
 			foreach($config['preloadPlugins'] as $kp=>$vp)
 				$this->addPlugin($vp);
 
-		$cfg = $stricter->getConfig();
+		$cfg = Stricter::getInstance()->getConfig();
 		if($cfg['desenv']===false) {
 			$this->force_compile=false;
 			$this->compile_check=false;
@@ -53,10 +51,6 @@ class SmartyResource extends Smarty implements Resource, ViewHandler
 			$this->compile_check=true;
 		}
 		$this->assign('stricter',$cfg);
-	}
-
-	public function preloadPlugins(){
-		Stricter::getInstance()->log("SmartyResource->preloadPlugins() is deprecated.");
 	}
 
 	public function addPlugin($strcomponent){
@@ -119,9 +113,8 @@ class SmartyResource extends Smarty implements Resource, ViewHandler
 
     public function select($varname, $sql, $is_html_options=false, $sql_assoc=DatabaseInterface::STRICTER_DB_SQL_ASSOC, &$dbinstance=null) {
 		if($dbinstance==null) {
-			$db=Stricter::getInstance()->getDefaultDatabaseId();
-			$dbi=Stricter::getInstance()->inject($db);
-		}	
+			$dbi=Stricter::getInstance()->getDefaultDatabase();
+		}
 		$smarty_array = array();
 
 		$query = $dbi->query($sql);
@@ -162,7 +155,7 @@ class SmartyResource extends Smarty implements Resource, ViewHandler
 		if($db)
 			$dbi =& $db;
 		else
-			$dbi=Stricter::getInstance()->inject( Stricter::getInstance()->getDefaultDatabaseId() );
+			$dbi=Stricter::getInstance()->inject( Stricter::getInstance()->getDefaultDatabase() );
 
 		$offset=$currentPage*$limit;
 		$q=$dbi->query($query);
