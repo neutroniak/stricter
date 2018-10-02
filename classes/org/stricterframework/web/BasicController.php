@@ -8,19 +8,18 @@ class BasicController
 	private $db;
 
 	public function __construct() {
-		$dbid=Stricter::getInstance()->getDefaultDatabaseId();
-		$this->db=Stricter::getInstance()->inject($dbid);
+		$this->db = Stricter::getInstance()->getDefaultDatabase();
 	}
 
 	public function index() {
-	//	$this->view->addPlugin('ErpPager');
+		//$this->view->addPlugin('ErpPager');
 
 		$this->view->assign('_ui', $this->ui);
 
 		if($_GET['deleted'])
-			$this->view->assign('flash_message', LANG_DELETE_SUCCESSFUL);
+			$this->view->assign('flash_message', 'LANG_DELETE_SUCCESSFUL');
 
-	//	$this->setUis();
+		//$this->setUis();
 
 		if($_GET['c'])
 			$this->ui['count']=$_GET['c'];
@@ -32,13 +31,13 @@ class BasicController
 		else if($this->ui['order'])
 			$this->entity->order($this->ui['order']['field'], $this->ui['order']['type']);
 		else
-			$this->entity->order($this->ui['fields'][0], ORDER_ASC);
+			$this->entity->order($this->ui['fields'][0], 'ORDER_ASC');
 
 		if($this->ui['keys'] && $this->params[0]) {
-			$this->entity->where($this->ui['keys'][1], WHERE_EQ, $this->params[0]);
+			$this->entity->where($this->ui['keys'][1], 'WHERE_EQ', $this->params[0]);
 		}
 
-# TODO - Move all this stuff to a private method
+		# TODO - Move all this stuff to a private method
 		foreach($this->ui['fields'] as $k=>$v) {
 			$getv=str_replace('.','_',$v);
 			$getv_begin=$getv.'_begin';
@@ -51,20 +50,20 @@ class BasicController
 
 			switch($thenode->getType()) {
 				case "StringType":
-					$this->entity->where($v, WHERE_ILIKE, $_GET[$getv]);
+					$this->entity->where($v, 'WHERE_ILIKE', $_GET[$getv]);
 					break;
 				case "NumericType":
-					$this->entity->where($v, WHERE_EQ, $_GET[$getv]);
+					$this->entity->where($v, 'WHERE_EQ', $_GET[$getv]);
 					break;
 				case "BooleanType":
 					if($_GET[$getv]=='true') {
 						$this->view->assign('boolval', $_GET[$getv]);
 						$_GET[$getv]='t';
-						$this->entity->where($v, WHERE_EQ, $_GET[$getv]);
+						$this->entity->where($v, 'WHERE_EQ', $_GET[$getv]);
 					} elseif($_GET[$getv]=='false') {
 						$this->view->assign('boolval', $_GET[$getv]);
 						$_GET[$getv]='f';
-						$this->entity->where($v, WHERE_EQ, $_GET[$getv]);
+						$this->entity->where($v, 'WHERE_EQ', $_GET[$getv]);
 					}
 					break;
 				case "DateType":
@@ -76,7 +75,7 @@ class BasicController
 					} elseif ($_GET[$getv_begin]) {
 						$end=sprintf("%s-%s-%s 23:59:59",$exb[2], date('n', strtotime($exb[1])), $exb[0]);
 					} 
-					$this->entity->where($v, WHERE_BETWEEN, array($begin,$end));
+					$this->entity->where($v, 'WHERE_BETWEEN', array($begin,$end));
 					break;
 			}
 		}
@@ -91,13 +90,13 @@ class BasicController
 			$this->view->assign('_ent', $this->entity);
 		}
 
-		$this->view->assign('optionsc',array(10=>10,15=>15,30=>30,60=>60,100=>100,200=>200));
-		$this->view->assign('optionsbool',array(''=>null,'true'=>'On','false'=>'Off'));
+		$this->view->assign('optionsc', array(10=>10,15=>15,30=>30,60=>60,100=>100,200=>200));
+		$this->view->assign('optionsbool', array(''=>null,'true'=>'On','false'=>'Off'));
 		$this->view->assign('get', $_GET);
-		$this->view->assign("uri",$_SERVER['REQUEST_URI']);
-		$this->view->assign('id',$this->params[0]);
-		$this->view->assign('_pager',$this->entity->getPaginationInfo());
-		$this->view->assign('_nfields',count($this->ui['fields'])+3);
+		$this->view->assign("uri", $_SERVER['REQUEST_URI']);
+		$this->view->assign('id', $this->params[0]);
+		$this->view->assign('_pager', $this->entity->getPaginationInfo());
+		$this->view->assign('_nfields', count($this->ui['fields'])+3);
 
 		if($this->db->error())
 			$this->view->assign('flash_error', $this->db->error());
@@ -109,7 +108,8 @@ class BasicController
 
 		$this->view->assign('_ui', $this->ui);
 		$ptitle = $this->view->getTemplateVars('ptitle');
-		array_push($ptitle, LANG_ADD);
+		if($ptitle)
+			array_push($ptitle, LANG_ADD);
 		$this->view->assign('ptitle', $ptitle);
 
 		$this->view->assign('sv',true);
@@ -126,7 +126,7 @@ class BasicController
 		} else if($this->stricter->isPost()) {
 			if($this->debug)
 				$this->entity->printErrors();
-			$this->view->assign('flash_warning',LANG_FORM_ERRORS);
+			$this->view->assign('flash_warning', 'LANG_FORM_ERRORS');
 		}
 	}
 
@@ -144,7 +144,7 @@ class BasicController
 		$this->view->assign('ptitle',$ptitle);
 
 		if($_GET['added'])
-			$this->view->assign('flash_message', LANG_INSERT_SUCCESSFUL);
+			$this->view->assign('flash_message', 'LANG_INSERT_SUCCESSFUL');
 
 		if(count($this->ui['keys']==2))
 			$this->view->assign("id", $this->params[0]);
@@ -162,13 +162,13 @@ class BasicController
 		if($this->stricter->isPost()) {
 			if($this->entity->validate()) {
 				if($n=$this->entity->update())
-					$this->view->assign('flash_message',LANG_UPDATE_SUCCESSFUL);
+					$this->view->assign('flash_message', 'LANG_UPDATE_SUCCESSFUL');
 				else
 					$this->view->assign('flash_error', $this->db->error());
 			} else {
 				if($this->debug)
 					$this->entity->printErrors();
-				$this->view->assign('flash_warning',LANG_FORM_ERRORS);
+				$this->view->assign('flash_warning', 'LANG_FORM_ERRORS');
 			}
 		}
 	}
