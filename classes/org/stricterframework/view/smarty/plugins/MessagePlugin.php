@@ -17,7 +17,7 @@ class MessagePlugin extends BasicPlugin
 		$this->addAttribute( 'jqueryOff' );
 	}
 
-	function message($params, &$smarty)
+	function message($params, $smarty)
 	{
 		parent::init($params, $objvar);
 

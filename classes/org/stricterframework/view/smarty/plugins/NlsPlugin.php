@@ -10,7 +10,7 @@ class NlsPlugin extends BasicPlugin
 		$this->smarty->registerPlugin('block', 'nls', array(&$this,'nls'));
 	}
 
-	function nls($params, $content, &$smarty)
+	function nls($params, $content, $smarty)
 	{
 		parent::init($params, $objvar);
 

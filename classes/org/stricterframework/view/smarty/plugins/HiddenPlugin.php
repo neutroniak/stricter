@@ -11,7 +11,7 @@ class HiddenPlugin extends BasicPlugin
 		$this->smarty->registerPlugin("function", "hidden", array(&$this,"hidden") );
 	}
 
-	function hidden($params, &$smarty)
+	function hidden($params, $smarty)
 	{
 		$objvar=&$params['name'];
 

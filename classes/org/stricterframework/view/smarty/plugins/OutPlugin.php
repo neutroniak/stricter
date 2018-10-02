@@ -14,7 +14,7 @@ class OutPlugin extends BasicPlugin
 		$this->addAttribute( 'strftime' );
 	}
 
-	function out($params, &$smarty)
+	function out($params, $smarty)
 	{
 		$objvar=&$params['name'];
 

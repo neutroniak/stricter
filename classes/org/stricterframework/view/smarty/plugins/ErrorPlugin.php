@@ -9,7 +9,7 @@ class ErrorPlugin
 		$this->smarty->registerPlugin("function", "error", array(&$this,"error"));
 	}
 
-	function error($params, &$smarty)
+	function error($params, $smarty)
 	{
 		$objvar=&$params['name'];
 

@@ -19,7 +19,7 @@ class SelectPlugin extends BasicPlugin
 		$this->addAttribute( 'empty' );
 	}
 
-	function select($params, &$smarty)
+	function select($params, $smarty)
 	{
 		$objvar=&$params['name'];
 

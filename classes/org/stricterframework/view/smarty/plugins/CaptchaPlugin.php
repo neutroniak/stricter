@@ -16,7 +16,7 @@ class CaptchaPlugin extends BasicPlugin
 		$this->addAttribute( 'fontsize' );
 	}
 
-	function captcha($params, &$smarty)
+	function captcha($params, $smarty)
 	{
 		$params["fontfile"] ? $font_file = $params["fontfile"] : $font_file =  'Vera.ttf';
 		$params["fontsize"] ? $font_size = $params["fontsize"] : $font_size =  16;

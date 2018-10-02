@@ -13,7 +13,7 @@ class JavascriptPlugin extends BasicPlugin
 		$this->addAttribute( 'method' );
 	}
 
-	function javascript($params, &$smarty)
+	function javascript($params, $smarty)
 	{
 		parent::init($params, $objvar);
 

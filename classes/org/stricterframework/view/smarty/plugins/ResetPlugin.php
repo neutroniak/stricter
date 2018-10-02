@@ -11,7 +11,7 @@ class ResetPlugin extends BasicPlugin
 		$this->smarty->registerPlugin("function", "reset", array(&$this,"reset"));
 	}
 
-	function reset($params, &$smarty)
+	function reset($params, $smarty)
 	{
 		parent::init($params, null);
 

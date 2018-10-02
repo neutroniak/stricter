@@ -14,7 +14,7 @@ class ImagePlugin extends BasicPlugin
 		$this->addAttribute( 'fprefix' );
 	}
 
-	function image($params, &$smarty)
+	function image($params, $smarty)
 	{
 		parent::init($params, $objvar);
 

@@ -13,7 +13,7 @@ class JqueryPlugin extends BasicPlugin
 		$this->addAttribute( 'min' );
 	}
 
-	function jquery($params, &$smarty) {
+	function jquery($params, $smarty) {
 
 		if($params['plugin']){
 

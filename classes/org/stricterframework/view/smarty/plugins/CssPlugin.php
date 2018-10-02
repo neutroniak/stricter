@@ -13,7 +13,7 @@ class CssPlugin extends BasicPlugin
 		$this->addAttribute( 'method' );
 	}
 
-	function css($params, &$smarty)
+	function css($params, $smarty)
 	{
 		if(!$params['src'])
 			return "css file required";

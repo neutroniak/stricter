@@ -12,7 +12,7 @@ class CheckboxPlugin extends BasicPlugin
 		$this->smarty->registerPlugin('function', "checkbox", array(&$this,"checkbox"));
 	}
 
-	function checkbox($params, &$smarty)
+	function checkbox($params, $smarty)
 	{
 		$objvar=&$params['name'];
 

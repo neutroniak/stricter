@@ -11,7 +11,7 @@ class RadioPlugin extends BasicPlugin
 		$this->smarty->registerPlugin("function", "radio", array(&$this,"radio"));
 	}
 
-	function radio($params, &$smarty)
+	function radio($params, $smarty)
 	{
 		$objvar=&$params['name'];
 

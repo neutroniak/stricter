@@ -10,7 +10,7 @@ class BackButtonPlugin extends BasicPlugin
 		$this->stricter->getSmarty()->registerPlugin('function', "backbutton", array(&$this,"backbutton"));
 	}
 
-	function backbutton($params, &$smarty)
+	function backbutton($params, $smarty)
 	{
 		parent::init($params, $params);
 

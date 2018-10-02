@@ -10,7 +10,7 @@ class ButtonPlugin extends BasicPlugin
 		$this->smarty->registerPlugin('function', 'button', array(&$this,'button'));
 	}
 
-	function button($params, &$smarty)
+	function button($params, $smarty)
 	{
 		parent::init($params, $params);
 

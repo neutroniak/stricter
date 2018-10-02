@@ -10,7 +10,7 @@ class TextareaPlugin extends BasicPlugin
 		$this->smarty->registerPlugin('function', "textarea", array(&$this,"textarea"));
 	}
 
-	function textarea($params, &$smarty)
+	function textarea($params, $smarty)
 	{
 		$objvar=&$params['name'];
 

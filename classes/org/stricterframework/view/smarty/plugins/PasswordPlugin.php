@@ -13,7 +13,7 @@ class PasswordPlugin extends BasicPlugin
 		$this->addAttribute( 'value' );
 	}
 
-	function password($params, &$smarty)
+	function password($params, $smarty)
 	{
 		$objvar=&$params['name'];
 

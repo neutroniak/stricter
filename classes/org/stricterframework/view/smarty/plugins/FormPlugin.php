@@ -14,7 +14,7 @@ class FormPlugin extends BasicPlugin
 		$this->addAttribute( 'enctype' );
 	}
 
-	function form($params, $content, &$smarty)
+	function form($params, $content, $smarty)
 	{
 		parent::init($params, $objvar);
 

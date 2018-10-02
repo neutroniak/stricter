@@ -10,7 +10,7 @@ class FCKEditorPlugin extends BasicPlugin
 		$this->smarty->registerPlugin("function", "fckeditor", array(&$this,"fckeditor") );
 	}
 
-	function fckeditor($params, &$smarty)
+	function fckeditor($params, $smarty)
 	{
 		if(! Stricter::getInstance()->getConfig('fckpath') )
 			return "fck needs a path";

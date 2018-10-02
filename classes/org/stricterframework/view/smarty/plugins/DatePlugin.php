@@ -25,7 +25,7 @@ class DatePlugin extends BasicPlugin
 		$this->addAttribute( 'string' );
 	}
 
-	function date($params, &$smarty)
+	function date($params, $smarty)
 	{
 		$objvar=&$params['name'];
 

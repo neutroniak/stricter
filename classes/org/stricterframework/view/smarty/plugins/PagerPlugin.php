@@ -11,7 +11,7 @@ class PagerPlugin extends BasicPlugin
 		$this->addAttribute( 'getvars' );
 	}
 
-	function pager($params, &$smarty)
+	function pager($params, $smarty)
 	{
 		parent::init($params, $objvar);
 

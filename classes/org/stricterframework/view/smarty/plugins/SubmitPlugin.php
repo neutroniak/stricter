@@ -9,7 +9,7 @@ class SubmitPlugin extends BasicPlugin
 		$this->smarty->registerPlugin("function", "submit", array(&$this,"submit"));
 	}
 
-	function submit($params, &$smarty)
+	function submit($params, $smarty)
 	{
 		parent::init($params, $objvar);
 

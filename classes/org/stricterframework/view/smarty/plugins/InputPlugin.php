@@ -16,7 +16,7 @@ class InputPlugin extends BasicPlugin
 		$this->addAttribute( 'value' );
 	}
 
-	function input($params, &$smarty)
+	function input($params, $smarty)
 	{
 		$objvar=&$params['name'];
 		parent::init($params, $objvar);
