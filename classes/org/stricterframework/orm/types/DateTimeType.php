@@ -14,6 +14,7 @@ class DateTimeType extends BasicType
 	public function __construct($name, $size=null, $req=true, $def=null) {
 		$this->setName($name);
 		$this->setSize($size);	
+		$this->setRequired($req);
 	}
 
 	// format yyyy-mm-dd hh:mm:ss
@@ -28,12 +29,10 @@ class DateTimeType extends BasicType
 			$newval['second'] ? $this->second=$newval['second'] : $this->second='00';
 			$this->_value=$this->year.'-'.$this->month.'-'.$this->day.' '.$this->hour.':'.$this->minute.':'.$this->second;
 		} else {
+			if(strlen($newval)==0)
+				return;
 			if(($format=Stricter::getInstance()->getConfig('datetime_format'))=="")
 				$format="Y-m-d H:i:s";
-
-			$ts = 1414706400;
-			$date1 = date($format, $ts);
-			$newval=substr($newval,0,strlen($date1));
 			$date = DateTime::createFromFormat($format, $newval);
 			if(!$date){
 				Stricter::getInstance()->log("DateType error: could not recognize date value: ".$newval.' using format:'.$format);
@@ -49,7 +48,7 @@ class DateTimeType extends BasicType
 		} 
 	}
 
-	function filterPost(&$post) {
+	function filterPost(&$post){
 		$this->dateValue=$post;
 		$this->setValue($post);
 	}

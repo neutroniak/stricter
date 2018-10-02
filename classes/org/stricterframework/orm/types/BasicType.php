@@ -15,7 +15,7 @@ class BasicType
 	public function getName() { return $this->_name; }
 	public function setName($name) { $this->_name=$name; }
 	public function getRequired() { return $this->_required; }
-	public function setRequired($t=true) { $this->_required=&$t; }
+	public function setRequired($t=true) { $this->_required=$t; }
 	public function getHash() { return $this->_hash; }
 	public function setHash($val) { $this->_hash = $val; }
 	public function getSize() { return $this->_size; }

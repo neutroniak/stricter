@@ -22,15 +22,15 @@ class TimeType extends BasicType
 			$newval['second'] ? $this->second=$newval['second'] : $this->second='00';
 			$this->_value=$this->hour.':'.$this->minute.':'.$this->second;
 		} else {
+			if(strlen($newval)==0)
+				return;
 			if(($format=Stricter::getInstance()->getConfig('time_format'))=="")
 				$format="H:i:s";
 			$date = DateTime::createFromFormat($format, $newval);
-
 			if(!$date){
 				Stricter::getInstance()->log("DateType error: could not recognize date value: ".$newval.' using format:'.$format);
 				return null;
 			}
-
 			$this->hour=$date->format("H");
 			$this->minute=$date->format("i");
 			$this->second=$date->format("s");
