@@ -34,33 +34,4 @@ class DatabaseResource implements ResourceProxy
 	}
 }
 
-interface DatabaseInterface
-{
-	const STRICTER_DB_SQL_ASSOC = 1;
-	const STRICTER_DB_SQL_NUM = 2;
-	const STRICTER_DB_SQL_BOTH = 3;
-	const STRICTER_DB_CASE_LOWER = 0;
-	const STRICTER_DB_CASE_UPPER = 1;
-
-	function connect();
-	function query($sql);
-	function numrows(&$resource);
-	function fetch(&$resource, $sql_assoc=Database::STRICTER_DB_SQL_ASSOC);
-	function free(&$resource);
-	function disconnect();
-	function error();
-	function setDebug($dbg);
-	function transaction();
-	function commit();
-	function rollback();
-	function lastInsertId($entity);
-	function escapeString($string_val);
-	function getDbType();
-	function getSqlStatement();
-	function isConnected();
-	function formatField($field);
-	function getDbCase();
-	function paginate(&$query,$limit,$offset);
-}
-
 ?>
