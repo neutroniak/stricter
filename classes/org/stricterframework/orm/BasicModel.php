@@ -9,7 +9,7 @@ class BasicModel
 	const RELATION_ONE=2;
 	const RELATION_MANY=3;
 
-	private $_db;
+	private $db;
 	private $_name;
 	private $_alias;
 	private $_numberOfErrors=0;
@@ -28,7 +28,7 @@ class BasicModel
 	private $_pageCurrent;
 	private $_pageMax;
 
-	public function __construct($alias){
+	public function __construct($alias, &$db=null){
 
 		$this->_alias=$alias;
 
@@ -42,14 +42,14 @@ class BasicModel
 					$v->filterPost($_POST[$hash]);
 			}
 		}
+	
+		if($db)
+			$this->db=$db;
+		else
+			$this->db=Stricter::getInstance()->getDefaultDatabase();
 	}
 
 	public function find($id=null){
-		$db=Stricter::getInstance()->inject( Stricter::getInstance()->getDefaultDatabaseId() );
-
-		if($db==null)
-			return;
-
 		$classname = $this->_name;
 		$classalias = '_'.$this->_alias;
 		$a_pk = $this->_primaryKey; # TODO - composite needed
@@ -60,8 +60,9 @@ class BasicModel
 		if($id) {
 			$where=" WHERE ".$a_pk[0]->getName().'='.$id;
 			$finalsql = "SELECT * ".$from.$where.$this->_order.$this->_limit;
-			$q=$db->query($finalsql);
-			$r=$db->fetch($q, DatabaseInterface::STRICTER_DB_SQL_ASSOC);
+			$q=$this->db->query($finalsql);
+			if($q)
+				$r=$this->db->fetch($q, DatabaseInterface::STRICTER_DB_SQL_ASSOC);
 			foreach($this as $k=>$v) {
 				if($v instanceof BasicType )  {
 					if($v===$this->_fk && $this->_fk!=null) # we cannot reset the _fk, a.k.a. joined field from parent object
@@ -81,7 +82,7 @@ class BasicModel
 						$v->find($v->_fk->getValue());
 					} else if($v->getRelation()==RELATION_MANY) {
 						$pk=$this->getPrimaryKey();
-						$v->where($v->_fknm, WHERE_EQ, $pk[0]->getValue());
+						$v->where($v->_fknm, 'WHERE_EQ', $pk[0]->getValue());
 						$v->find();
 					}
 				}
@@ -93,13 +94,13 @@ class BasicModel
 			}
 
 			$finalsql = 'SELECT _'.$this->_alias.'.*'.$from.$this->_joins.$this->_where.$this->_order.$this->_limit;
-			$q = $db->query($finalsql);
-			$n = $db->numrows($q);
+			$q = $this->db->query($finalsql);
+			$n = $this->db->numrows($q);
 			$ser = serialize($this);
 			for($i=0;$i<$n;$i++)
 				array_push($this->_list, unserialize($ser));
 			$i=0;
-			while( $r=$db->fetch($q, DatabaseInterface::STRICTER_DB_SQL_ASSOC) ) {
+			while( $r=$this->db->fetch($q, DatabaseInterface::STRICTER_DB_SQL_ASSOC) ) {
 				foreach($this->_list[$i] as $k=>$v) {
 					if($v instanceof BasicType) {
 						$fieldname=$v->getName();
@@ -123,7 +124,7 @@ class BasicModel
 								$pk=$this->_list[$i]->getPrimaryKey();
 								$pkval=$pk[0]->getValue();
 							}
-							$v->where($v->_fknm, WHERE_EQ, $pkval);
+							$v->where($v->_fknm, 'WHERE_EQ', $pkval);
 							$v->find();
 						}
 					}
@@ -188,10 +189,10 @@ class BasicModel
 		else
 			$this->_order.=', '.$vals;
 		switch($by) {
-			case ORDER_ASC:
+			case 'ORDER_ASC':
 				$this->_order.=" ASC ";
 			break;
-			case ORDER_DESC:
+			case 'ORDER_DESC':
 				$this->_order.=" DESC ";
 			break;
 			default:
@@ -269,10 +270,9 @@ class BasicModel
 	private function _paginate(&$query) {
 		$currentPage=$this->_pageCurrent;
 		$limit=$this->_pageMax;
-		$db=Stricter::getInstance()->inject( Stricter::getInstance()->getDefaultDatabaseId() );
 		$offset=$currentPage*$limit;
-		$q=$db->query($query);
-		$n=$db->numrows($q);
+		$q=$this->db->query($query);
+		$n=$this->db->numrows($q);
 		$this->limit($limit+0, $offset+0);
 		$toceil=$n/$limit;
 		$pages = ceil($toceil)+1;
@@ -285,12 +285,10 @@ class BasicModel
 		return $this;
 	}
 
-	public function insert()
-	{
-		$db=Stricter::getInstance()->inject( Stricter::getInstance()->getDefaultDatabaseId() );
+	public function insert() {
 
-		if(!$db) {
-			Stricter::getInstance()->log('Database was not initialized..');
+		if(!$this->db->isConnected()) {
+			Stricter::getInstance()->log('Database is not connected.');
 			return null;
 		}
 
@@ -301,7 +299,7 @@ class BasicModel
 		foreach($this as $key=>$tfield) {
 			if($tfield instanceof BasicType && $tfield->getSequence()==null ) {
 				$fields .= $tfield->getName().", ";
-				$values .= $db->formatField( $tfield ).", ";
+				$values .= $this->db->formatField( $tfield ).", "; # TODO - move this to type
 			}
 		}
 
@@ -310,9 +308,9 @@ class BasicModel
 
 		$sql = "INSERT INTO $entity_name($fields) VALUES ($values)";
 
-		if( $db->query($sql)) {
+		if($this->db->query($sql)) {
 			if($a_pk[0]->getSequence()!==null) {
-				$last = $db->lastInsertId($this);
+				$last = $this->db->lastInsertId($this);
 				$a_pk[0]->setValue($last);
 			} else {
 				$last = $a_pk[0]->getValue();  # TODO - return array of pks
@@ -324,12 +322,9 @@ class BasicModel
 		return $last;
 	}
 
-	public function update()
-	{
-		$db=Stricter::getInstance()->inject( Stricter::getInstance()->getDefaultDatabaseId() );
-
-		if(!$db) {
-			Stricter::getInstance()->log('Database was not initialized..');
+	public function update(){
+		if(!$this->db->isConnected()) {
+			Stricter::getInstance()->log('Database is not connected.');
 			return null;
 		}
 
@@ -340,7 +335,7 @@ class BasicModel
 		foreach($this as $key=>$tfield) {
 			if($tfield instanceof BasicType) {
 				if($this->_fk!==$tfield){
-					$val = $db->formatField( $tfield );
+					$val = $this->db->formatField( $tfield ); # TODO - move this to type
 					$fields .= $tfield->getName()."=".$val.",";
 				}
 			} elseif ($tfield instanceof BasicModel) {
@@ -356,7 +351,7 @@ class BasicModel
 
 		$sql .= $where;
 
-		if( $db->query($sql) )
+		if( $this->db->query($sql) )
 			$last = $a_pk[0]->getValue(); # TODO - return array of pks
 
 		return $last;
@@ -374,10 +369,8 @@ class BasicModel
 
 	public function delete()
 	{
-		$db=Stricter::getInstance()->inject( Stricter::getInstance()->getDefaultDatabaseId() );
-	
-		if(!$db) {
-			Stricter::getInstance()->log('Database was not initialized..');
+		if(!$this->db->isConnected()) {
+			Stricter::getInstance()->log('Database is not connected.');
 			return null;
 		}
 
@@ -399,7 +392,7 @@ class BasicModel
 
 		$sql = "DELETE FROM ".$this->_name." AS ".$this->_alias." ".$where;
 
-		if($db->query($sql))
+		if($this->db->query($sql))
 			return true;
 		else
 			return false;
@@ -427,8 +420,7 @@ class BasicModel
 		return $obj;
 	}
 
-	public function validate()
-	{
+	public function validate() {
 		$this->checkUniqueKeys();
 
 		if(count($this->_validateOnly)>0)
@@ -453,8 +445,7 @@ class BasicModel
 			return true;
 	}
 
-	public function printErrors()
-	{
+	public function printErrors() {
 		$name = $this->getAlias();
 
 		foreach($this as $k=>$v)
@@ -470,8 +461,7 @@ class BasicModel
 		}
 	}
 
-	public function reset()
-	{
+	public function reset() {
 		foreach( $this as $fk=>$vk )
 		{
 			if($vk instanceOf BasicType) {
@@ -483,13 +473,12 @@ class BasicModel
 		$this->_numberOfErrors=0;
 	}
 
-	private function checkUniqueKeys()
-	{
-		$db=Stricter::getInstance()->inject( Stricter::getInstance()->getDefaultDatabaseId() );
-
-		if(!$db) {
+	private function checkUniqueKeys() {
+		if($this->db && !$this->db->isConnected()) {
+			Stricter::getInstance()->log('Database is not connected.');
 			return null;
 		}
+
 		if( count($this->_uniqueKeys)==0 )
 			return;
 
@@ -508,8 +497,8 @@ class BasicModel
 				$sql.=$andWhere.$params.$andPk;
 			}
 			unset($andWhere);
-			$q = $db->query($sql);
-			$n = $db->numrows($q);
+			$q = $this->db->query($sql);
+			$n = $this->db->numrows($q);
 			if($n>0) {
 				foreach($v as $kk=>$vv)
 					$vv->setError( LANG_ALREADY_REGISTERED_ERROR );
@@ -539,11 +528,6 @@ class BasicModel
 	public function getListItem($k){if($this->_list[$k]===null) return $this; else $ser=serialize($this->_list[$k]); return unserialize($ser); $this->_list[$k];}
 	public function getRelation(){return $this->_relation;}
 	public function getPaginationInfo(){return $this->_paginationInfo;}
-}
-
-interface ModelInterface
-{
-	public function init();
 }
 
 ?>
