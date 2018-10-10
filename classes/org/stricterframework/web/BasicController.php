@@ -126,7 +126,7 @@ class BasicController
 		} else if($this->stricter->isPost()) {
 			if($this->debug)
 				$this->entity->printErrors();
-			$this->view->assign('flash_warning', 'LANG_FORM_ERRORS');
+			$this->view->assign('flash_warning', LANG_FORM_ERRORS);
 		}
 	}
 
@@ -144,7 +144,7 @@ class BasicController
 		$this->view->assign('ptitle',$ptitle);
 
 		if($_GET['added'])
-			$this->view->assign('flash_message', 'LANG_INSERT_SUCCESSFUL');
+			$this->view->assign('flash_message', LANG_INSERT_SUCCESSFUL);
 
 		if(count($this->ui['keys']==2))
 			$this->view->assign("id", $this->params[0]);
@@ -162,13 +162,13 @@ class BasicController
 		if($this->stricter->isPost()) {
 			if($this->entity->validate()) {
 				if($n=$this->entity->update())
-					$this->view->assign('flash_message', 'LANG_UPDATE_SUCCESSFUL');
+					$this->view->assign('flash_message', LANG_UPDATE_SUCCESSFUL);
 				else
 					$this->view->assign('flash_error', $this->db->error());
 			} else {
 				if($this->debug)
 					$this->entity->printErrors();
-				$this->view->assign('flash_warning', 'LANG_FORM_ERRORS');
+				$this->view->assign('flash_warning', LANG_FORM_ERRORS);
 			}
 		}
 	}

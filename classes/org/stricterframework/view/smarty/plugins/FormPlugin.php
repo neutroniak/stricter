@@ -44,7 +44,7 @@ class FormPlugin extends BasicPlugin
 #			$str .= "<script type=\"text/javascript\">var frmvalidator  = new Validator(\"".$params['id']."\");</script>";
 		}
 
-		$str.=$content."</form>\n\n";
+		$str.=$content."</form>\n";
 
 		if($content)
 			return $str;

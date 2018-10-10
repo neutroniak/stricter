@@ -15,33 +15,35 @@ class Stricter
 	private $routes;
 	private $resources;
 	private $resourceObjects=array();
-	private $defaultDatabaseId;
-	private $viewHandler;
+	private $defaultDatabase;
+	private $defaultView;
+	private $defaultLogger;
 	private $action='index';
 	private $mdl;
 	private static $instance;
 
-	public function Stricter(){
+	public $view;
+	public $logger;
+
+	public function __construct(){
 
 		include('config.php');
+		include('routes.php');
 
 		$this->config=&$config;
 		$this->resources=&$resource;
 		$this->routes=&$routes;
 
-		if(file_exists('routes.php'))
-			include('routes.php');
-
-		if(!$this->config['webpath'])
+		if(!isset($this->config['webpath']))
 			$this->config['webpath'] = str_replace('/index.php','',$_SERVER['SCRIPT_NAME']);
 
-		if(!$this->config['site_dir'])
+		if(!isset($this->config['site_dir']))
 			$this->config['site_dir'] = realpath('.'); 
 
-		if(!$this->config['themes_dir'])
+		if(!isset($this->config['themes_dir']))
 			$this->config['themes_dir'] = $this->config['site_dir'].DIRECTORY_SEPARATOR.'themes';
 
-		if(!$this->config['languages_dir'])
+		if(!isset($this->config['languages_dir']))
 			$this->config['languages_dir'] = $this->config['site_dir'].DIRECTORY_SEPARATOR.'languages';
 
 		$newini = $this->config['site_dir'].DIRECTORY_SEPARATOR.'classes'.PATH_SEPARATOR.
@@ -53,7 +55,7 @@ class Stricter
 		ini_set("date.timezone", $this->config['timezone']);
 
 		setlocale(LC_ALL, $this->config['locale']);
-	
+
 		Stricter::$instance=&$this;
 
 		set_error_handler( array($this, 'setErrorHandler') );
@@ -62,7 +64,7 @@ class Stricter
 	}
 
 	public function inject($name){
-		if(!$name)
+		if(strlen($name)==0)
 			return;
 		if($this->resourceObjects[$name]) {
 			return $this->resourceObjects[$name];
@@ -71,49 +73,45 @@ class Stricter
 			$str = substr(strrchr($this->resources[$name]['class'], DIRECTORY_SEPARATOR), 1);
 			$res = new $str($this->resources[$name], $name);
 
-			$realres =null;
+			$this->resourceObjects[$name]=&$res;
 
-			if($res instanceof ResourceProxy)
-				$realres = $res->getRealObject();
-			else
-				$realres =& $res;
+			if($res instanceof ViewInterface && !$this->defaultView)
+				$this->defaultView=&$res;
+			if($res instanceof DatabaseInterface && !$this->defaultDatabase)
+				$this->defaultDatabase=$res;
 
-			$this->resourceObjects[$name]=&$realres;
-			if($realres instanceof ViewHandler)
-				$this->viewHandler=$name;
-			if($realres instanceof DatabaseInterface && !$this->defaultDatabaseId)
-				$this->defaultDatabaseId=$name;
-
-			return $realres;
+			return $res;
 		}
 	}
 
 	public function dispatch(){
-		$ex=explode('/',$_GET['mdl']);
+		$getmdl = preg_replace('/[^a-zA-Z0-9-_\/\.]/','', $_GET['mdl']);
+
+		$ex=explode('/', $getmdl);
 
 		$path=null;
 		$params=array();
 
 		foreach($ex as $k=>$v) {
-			if($abs==1 || preg_match('/[^a-zA-Z\-]/',$v)) {
-				array_push($params,$v);
+			if($abs==1 || preg_match('/[^a-zA-Z\-_\.]/', $v)){
+				array_push($params, $v);
 			} else {
 				$path.='/'.$v;
 				if($this->routes[$path][3]==true)
 					$abs=1;
 			}
 		}
+
 		if($path!='/' && (strrpos($path,'/')==strlen($path)-1))
 			$path=substr($path,0,-1);
 
-		$sobj = substr( strrchr($this->routes[$path][0], DIRECTORY_SEPARATOR), 1);
+		$sobj = substr(strrchr($this->routes[$path][0], DIRECTORY_SEPARATOR), 1);
 
-		if(!$sobj){ # TODO - implement auto routes
+		if(!$sobj){
 			$this->callError("LANG_PAGE_NOT_FOUND",  404);
 			return;
 		}
 
-		$viewHandler =& $this->resourceObjects[$this->viewHandler];
 		$tplName=null;
 		$tplBase=null;
 		if($this->routes[$path][2])
@@ -128,63 +126,57 @@ class Stricter
 
 		$this->action=$this->routes[$path][1];
 
-		if($inc) {
+		if($inc){
 
 			include_once($this->config['languages_dir'].'/'.$this->config['locale'].'.'.$this->config['charset'].'/index.php'); #NLS common (required)
 
 			$obj = new $sobj();
 			$obj->stricter =& $this;
-			if($viewHandler){
-				$obj->view=&$viewHandler;
+			if($this->defaultView){
+				$obj->view=&$this->defaultView;
 				if($obj->view->getTemplate()=="")
 					$obj->view->setTemplate($tplName);
-				$obj->view->assign('mdl',$tplBase);
+				$obj->view->assign('mdl', $tplBase);
 			}
-			
+
 			$this->mdl=$tplBase;
 
 			$obj->params=&$params; # send parameters to controller
-
+			if($this->defaultLogger) {
+				$obj->stricter->logger=&$this->defaultLogger;
+			}
 			if(method_exists($obj, '__init'))
 				$obj->__init();
 
 			call_user_func( array(&$obj, $this->routes[$path][1]) );
+			header('Content-type:'.$this->contentType.'; charset='.$this->config['charset']);
+
+			$this->defaultView->setTheme($this->config['theme']);
+			$this->defaultView->assign('template', $this->defaultView->getTemplate() );
+
+			ob_clean();
+			ob_start();
+
+			$this->defaultView->output();
 		} else {
-			$this->callError("LANG_PAGE_NOT_FOUND",  404);
+			$this->callError("LANG_PAGE_NOT_FOUND", 404);
 		}
 	}
 
 	public function setExceptionHandler($errstr){
-		$inst = Stricter::getInstance();
-		$inst->log($errstr);
-		return true;
+		$this->log($errstr);
 	}
 
 	public function setErrorHandler($errno, $errstr){
-		$inst = Stricter::getInstance();
-		$inst->log($errstr, $errno);
-		return true;
-	}
-
-	public function output(){
-		header('Content-type:'.$this->contentType.'; charset='.$this->config['charset'] );
-		ob_clean();
-		ob_start();
-		if($this->viewHandler){
-			$vw =& $this->viewHandler;
-			$this->resourceObjects[$vw]->setTheme($this->config['theme']);
-			$this->resourceObjects[$vw]->assign('template', $this->resourceObjects[$vw]->getTemplate() );
-			$this->resourceObjects[$vw]->output();
-		}
+		$this->log($errstr, $errno);
 	}
 
 	public function callError($code, $httpCode){
 		include_once("org/stricterframework/http/HttpStatus.php");
 		if($httpCode!=null)
 			header(constant('HttpStatus::HTTP_'.$httpCode));
-		$vw =& $this->resourceObjects[$this->viewHandler];
-		$vw->assign('errmsg', $code);
-		$vw->setDisplay('error');
+		$this->defaultView->assign('errmsg', $code);
+		$this->defaultView->setDisplay('error');
 	}
 
 	public function session($sessName){
@@ -197,11 +189,17 @@ class Stricter
 	}
 
 	public function log($message, $mlevel=E_WARNING, $logdir=null, $dotrace=false){
+		if($this->defaultLogger) {
+			$this->defaultLogger->log($message, $mlevel);
+			return;
+		}
+
 		if(!$logdir)
 			$logdir = $this->config['log_dir'];
 
-		if($mlevel <= $this->config['log_level']) 
-		{
+		$fmessage="";
+
+		if($mlevel <= $this->config['log_level']){
 			$datefile = date("Y-m-d");
 
 			switch($mlevel){
@@ -217,12 +215,11 @@ class Stricter
 
 			$fmessage .= ' '.$message;
 			$trace=null;
-			if($dotrace || $this->config['log_trace']===true) {
+			if($dotrace || isset($this->config['log_trace'])===true) {
 				$ar = debug_backtrace();
 				foreach($ar as $k=>$v)
 					if($ar[$k]["file"] && $ar[$k]["function"]!="")
 						$trace .= '     on function '.$ar[$k]["function"].' at '.$ar[$k]["file"].':'.$ar[$k]["line"]."\n";
-
 			}
 			$trace .= '  URI: '.$_SERVER["REQUEST_URI"]."\n";
 			if(isset($_SERVER['HTTP_REFERER']))
@@ -241,9 +238,9 @@ class Stricter
 		exit;
 	}
 
-	public function requireHttps($istrue){		
+	public function requireHttps($istrue){
 		$url = null;
-		
+
 		$requestURI = str_replace($this->config['webpath'], '', $_SERVER['REQUEST_URI']);
 
 		if($istrue==true && $_SERVER['HTTPS']!="on") {
@@ -279,30 +276,38 @@ class Stricter
 	public function setConfig($item, $itemval) { $this->config[$item]=$itemval; }
 	public function getAction() { return $this->action; }
 	public function getMdl() { return $this->mdl; }
-	public function getViewHandler(){return $this->viewHandler;}
-	public function getDefaultDatabaseId(){return $this->defaultDatabaseId;}
+	public function getDefaultView(){return $this->defaultView;}
+	public function getDefaultDatabase(){return $this->defaultDatabase;}
+	public function setDefaultLogger(&$logger){
+		if($this->defaultLogger==null) {
+			$this->defaultLogger=&$logger;
+			// replace the error default error handlers defined on constructor
+			set_error_handler( array($logger, 'log'));
+			set_exception_handler( array($logger, 'log') );
+		}
+	}
 	public function version(){return self::VERSION_MAJOR.'.'.self::VERSION_MINOR.'.'.self::VERSION_PATCH;}
 }
 
-//interfaces
+// interfaces
 
-interface Controller
-{
+interface Controller {
 	public function index();
 }
 
-interface Resource
-{
-
+interface Resource {
+	
 }
 
-interface ResourceProxy
-{
-	function getRealObject();
+interface LoggerInterface {
+	function debug($msg);
+	function info($msg);
+	function warn($msg);
+	function error($msg);
+	function log($msg, $level);
 }
 
-interface ViewHandler
-{
+interface ViewInterface {
 	function output();
 	function assign($var,$val=null);
 	function setDisplay($val,$out=Stricter::OUT_HTML);
@@ -312,6 +317,39 @@ interface ViewHandler
 	function setTheme($val);
 	function getTheme();
 	function fetchTemplate($tpl);
+}
+
+interface DatabaseInterface {
+	const STRICTER_DB_SQL_ASSOC = 1;
+	const STRICTER_DB_SQL_NUM = 2;
+	const STRICTER_DB_SQL_BOTH = 3;
+	const STRICTER_DB_CASE_LOWER = 0;
+	const STRICTER_DB_CASE_UPPER = 1;
+
+	function connect();
+	function query($sql);
+	function numrows(&$resource);
+	function fetch(&$resource, $sql_assoc=Database::STRICTER_DB_SQL_ASSOC);
+	function free(&$resource);
+	function execute($query, $params);
+	function disconnect();
+	function error();
+	function setDebug($dbg);
+	function transaction();
+	function commit();
+	function rollback();
+	function lastInsertId($entity);
+	function escapeString($string_val);
+	function getDbType();
+	function getSqlStatement();
+	function isConnected();
+	function formatField($field);
+	function getDbCase();
+	function paginate(&$query,$limit,$offset);
+}
+
+interface ModelInterface {
+	public function init();
 }
 
 ?>
