@@ -136,7 +136,7 @@ Ajax.prototype.execute = function()
 }
 
 //evaluate all js from ajax template.. 
-//found on http://brightbyte.de/page/Loading_script_tags_via_AJAX
+//http://brightbyte.de/page/Loading_script_tags_via_AJAX
 function __runScripts(e) {
 	if (e.nodeType != 1) return; //if it's not an element node, return
 	if (e.tagName.toLowerCase() == 'script') {
