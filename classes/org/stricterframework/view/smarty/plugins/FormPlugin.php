@@ -37,7 +37,9 @@ class FormPlugin extends BasicPlugin
 
 		$str .= "<form ";
 		$str .= parent::attributes();
-		$str .= " $method $action $custom $enctype >";
+		if(!$params['id'])
+			$id=" id='_".md5($params['action'].date('Ymdhms'))."' ";
+		$str .= " $method $action $custom $enctype $id>";
 		
 		if($params['id']) {
 	#		$str .= "<script src=\"".Stricter::getConfig('stricter_vpath')."/javascript/form_validator/gen_validatorv2.js\" type=\"text/javascript\"></script>";
