@@ -57,7 +57,11 @@ class SmartyResource extends Smarty implements Resource, ViewInterface
 		try{
 			require_once('org/stricterframework/view/smarty/plugins/BasicPlugin.php');
 			require_once("org/stricterframework/view/smarty/plugins/".$strcomponent."Plugin.php");
-			$formclassname = $strcomponent.'Plugin';
+			if(strrchr($strcomponent,'/'))
+				$formclassname = substr(strrchr($strcomponent, '/'), 1).'Plugin';
+			else
+				$formclassname = $strcomponent.'Plugin';
+				
 			$forminstance = new $formclassname();
 			$forminstance->smarty=&$this;
 			$forminstance->stricter=&Stricter::getInstance();
@@ -170,29 +174,6 @@ class SmartyResource extends Smarty implements Resource, ViewInterface
 
 	private function iconvAjax(&$v ,$k){ 
 		$v=iconv("UTF-8", $this->config['charset'], $v);
-	}
-
-	//for Smarty v2 compatibility
-	function __call($name, $args){
-		switch ($name) {
-		case "registerPlugin":
-			if($args[0]=="function")
-				$this->register_function($args[1], $args[2]);
-			else if($args[0]=="modifier")
-				$this->register_modifier($args[1], $args[2]);
-			else if($args[0]=="block")
-				$this->register_block($args[1], $args[2]);
-		break;
-		case "clearAllCache":
-			$this->clear_cache();
-		break;
-		case "getTemplateVars":
-			return $this->_tpl_vars[$args[0]];
-		break;
-		default:
-			Stricter::getInstance()->log("Unhandled Smarty method: $name");
-		break;
-		}
 	}
 }
 
