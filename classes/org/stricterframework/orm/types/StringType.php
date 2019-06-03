@@ -28,7 +28,7 @@ class StringType extends BasicType
 		if($this->getRequired() && trim($this->getValue())=='')
 			$this->setError( LANG_REQUIRED_FIELD_ERROR );
 
-		if( strlen($this->getValue())>$this->getSize() && $this->getSize()!="")
+		if( $this->getSize()>0 && strlen($this->getValue())>$this->getSize() && $this->getSize()!="")
 			$this->setError( LANG_SIZE_LIMIT_ERROR );
 	}
 }

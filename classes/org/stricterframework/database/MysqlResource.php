@@ -41,9 +41,10 @@ class MysqlResource implements Resource, DatabaseInterface
 		return $conn;
 	}
 
-function execute($sql, $params) {
+	function execute($sql, $params) {
 
-}
+	}
+	
 	function query($sql) {
 		$this->sqlStatement = $sql;
 
@@ -59,7 +60,7 @@ function execute($sql, $params) {
 			return $q;
 		}
 	}
-	
+
 	function numrows(&$resource) {
 		$n = mysql_num_rows($resource);
 		

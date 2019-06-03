@@ -127,7 +127,6 @@ class Stricter
 		$this->action=$this->routes[$path][1];
 
 		if($inc){
-
 			include_once($this->config['languages_dir'].'/'.$this->config['locale'].'.'.$this->config['charset'].'/index.php'); #NLS common (required)
 
 			$obj = new $sobj();
@@ -179,7 +178,7 @@ class Stricter
 		$this->defaultView->setDisplay('error');
 	}
 
-	public function session($sessName){
+	public function session($sessName, $lifetime=null){
 		session_name($sessName);
 		session_start();
 		if($_SESSION[$sessName] && $_SESSION[$sessName]!='')
@@ -330,6 +329,7 @@ interface DatabaseInterface {
 	function query($sql);
 	function numrows(&$resource);
 	function fetch(&$resource, $sql_assoc=Database::STRICTER_DB_SQL_ASSOC);
+	function fetchAll(&$resource, $sql_assoc=Database::STRICTER_DB_SQL_ASSOC);
 	function free(&$resource);
 	function execute($query, $params);
 	function disconnect();

@@ -34,7 +34,7 @@ class LoggerResource implements Resource, LoggerInterface
 			$this->setType($config['type']);
 		else
 			$this->setType('file');
-			
+
 		Stricter::getInstance()->setDefaultLogger($this);
 	}
 

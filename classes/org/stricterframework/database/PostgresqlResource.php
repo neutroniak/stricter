@@ -13,13 +13,13 @@ class PostgresqlResource implements Resource, DatabaseInterface
 	private $dbport;
 	private $sqlStatement;
 
-	function __construct(&$config)
-	{
+	function __construct(&$config) {
 		$this->dbhost = $config['host'];
 		$this->dbuser = $config['user'];
 		$this->dbpass = $config['password'];
 		$this->dbname = $config['name'];
 		$this->dbport = $config['port'];
+		$this->debug  = $config['debug'];
 
 		if(!$this->dbport)
 			$this->dbport=5432;
@@ -91,6 +91,16 @@ class PostgresqlResource implements Resource, DatabaseInterface
 		$r = pg_fetch_array($query, null, $sql_assoc);
 				
 		return $r;
+	}
+
+	function fetchAll(&$query, $sql_assoc=DatabaseInterface::STRICTER_DB_SQL_ASSOC) {
+		$arr = array();
+
+		while($r = pg_fetch_array($query, null, $sql_assoc)) {
+			array_push($arr, $r);
+		}
+				
+		return $arr;
 	}
 
 	function free(&$query) {
