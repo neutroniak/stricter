@@ -14,10 +14,10 @@ class LoggerResource implements Resource, LoggerInterface
     const COLOR_END = "\033[m";
 
 	public $config=array();
-	private $colors;
+	private $colors=false;
 	private $email;
 	private $level;
-	private $type;
+	private $type='file';
 	private $errorLogType=3; // file
 
 	function __construct(&$config) {
@@ -25,12 +25,13 @@ class LoggerResource implements Resource, LoggerInterface
 
 		if($config['colors']===true)
 			$this->colors=true;
-		if($config['level'])
+
+		if(isset($config['level']))
 			$this->level=$config['level'];
 
 		$this->errorLogType=3;
 
-		if($config['type'])
+		if(isset($config['type']))
 			$this->setType($config['type']);
 		else
 			$this->setType('file');
@@ -51,8 +52,8 @@ class LoggerResource implements Resource, LoggerInterface
 		$this->dolog($msg, $mlevel=E_ERROR);
 	}
 
-	function log($msg, $level) {
-		if($level <= $this->level){
+	function log($msg, $level=E_WARNING) {
+		if($level && $level <= $this->level){
 			switch($level) {
 				case E_ERROR:
 				case E_USER_ERROR:
