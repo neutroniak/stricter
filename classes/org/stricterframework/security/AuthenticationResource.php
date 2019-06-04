@@ -16,7 +16,7 @@ class AuthenticationResource implements Resource
 		ini_set('session.use_strict_mode','On');
 		ini_set('session.sid_length','256');
 
-		session_set_cookie_params(4000, null, null, true, true);
+		session_set_cookie_params(4000, "/", null, true, true);
 		session_name("STRICTER");
 		session_start();
 
