@@ -53,7 +53,7 @@ class LoggerResource implements Resource, LoggerInterface
 	}
 
 	function log($msg, $level=E_WARNING) {
-		if($level && $level <= $this->level){
+		if($level && $level <= $this->level) {
 			switch($level) {
 				case E_ERROR:
 				case E_USER_ERROR:

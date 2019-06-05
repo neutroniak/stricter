@@ -64,12 +64,26 @@ class Stricter
 	}
 
 	public function inject($name){
-		if(strlen($name)==0)
+		if(strlen(trim($name))===0) {
+			$this->log("Resource with no name: ".$name, E_ERROR);
 			return;
+		}
 		if($this->resourceObjects[$name]) {
 			return $this->resourceObjects[$name];
 		} else {
-			require_once($this->resources[$name]['class'].'.php');
+			if($this->resources[$name]===null || !is_array($this->resources[$name])) {
+				$this->log("Resource ".$name.' cannot be injected. Check config file if the resource exists or is configured correctly.', E_ERROR);
+				return null;
+			}
+			if($this->resources[$name]['class']=="") {
+				$this->log("Resource ".$name.' cannot be injected because it does not have a Resource class', E_ERROR);
+				return null;
+			}
+			$checkinc = @include_once($this->resources[$name]['class'].'.php') ;
+			if($checkinc===false){
+				$this->log("Resource ".$this->resources[$name]['class'].' cannot be found on include_path.', E_ERROR);
+				return null;
+			}
 			$str = substr(strrchr($this->resources[$name]['class'], DIRECTORY_SEPARATOR), 1);
 			$res = new $str($this->resources[$name], $name);
 
