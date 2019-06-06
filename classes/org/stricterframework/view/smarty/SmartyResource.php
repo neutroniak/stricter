@@ -7,7 +7,6 @@ class SmartyResource extends Smarty implements Resource, ViewInterface
 	public $config=array();
 	private $extension;
 	private $display;
-	private $theme;
 	private $template;
 	private $cacheId=null;
 	private $version;
@@ -18,27 +17,19 @@ class SmartyResource extends Smarty implements Resource, ViewInterface
 
 		$this->config=&$config;
 
-		$themeDefaultDir= Stricter::getInstance()->getConfig('themes_dir').DIRECTORY_SEPARATOR.Stricter::getInstance()->getConfig('theme').DIRECTORY_SEPARATOR;
+		$site_dir = Stricter::getInstance()->getConfig('site_dir');
 
-		if($this->_version){
-			$this->version=preg_replace('/[^0-9\.]/','',$this->_version);
-			$config['templateDir'] ? $this->template_dir=$config['templateDir'] : $this->template_dir=$themeDefaultDir.'templates';
-			$config['compileDir'] ? $this->compile_dir=$config['compileDir'] : $this->compile_dir=$themeDefaultDir.'templates_c';
-			$config['configDir'] ? $this->config_dir=$config['configDir'] : $this->config_dir=$themeDefaultDir.'config';
-			$config['cacheDir'] ? $this->cache_dir=$config['cacheDir'] : $this->cache_dir=$themeDefaultDir.'cache';
-			$config['extension'] ? $this->extension=$config['extension']: $this->extension='.tpl';
-		} else {
-			$this->version=self::SMARTY_VERSION;
-			$this->version=preg_replace('/[^0-9\.]/','',self::SMARTY_VERSION);
-			$config['templateDir'] ? $this->setTemplateDir($config['templateDir']) : $this->setTemplateDir($themeDefaultDir.'templates');
-			$config['compileDir'] ? $this->setCompileDir($config['compileDir']) : $this->setCompileDir($themeDefaultDir.'templates_c');
-			$config['configDir'] ? $this->setConfigDir($config['configDir']) : $this->setConfigDir($themeDefaultDir.'config');
-			$config['cacheDir'] ? $this->setCacheDir($config['cacheDir']): $this->setCacheDir($themeDefaultDir.'cache');
-			$config['extension'] ? $this->extension=$config['extension']: $this->extension='.tpl';
-		}
+		$this->version=self::SMARTY_VERSION;
+		$this->version=preg_replace('/[^0-9\.]/','',self::SMARTY_VERSION);
+		$sep=DIRECTORY_SEPARATOR;
+		$config['templateDir'] ? $this->setTemplateDir($config['templateDir']) : $this->setTemplateDir($site_dir.$sep.'views'.$sep.'smarty'.$sep.'templates');
+		$config['compileDir'] ? $this->setCompileDir($config['compileDir']) : $this->setCompileDir($site_dir.$sep.'views'.$sep.'smarty'.$sep.'templates_c');
+		$config['configDir'] ? $this->setConfigDir($config['configDir']) : $this->setConfigDir($site_dir.$sep.'views'.$sep.'smarty'.$sep.'config');
+		$config['cacheDir'] ? $this->setCacheDir($config['cacheDir']): $this->setCacheDir($site_dir.$sep.'views'.$sep.'smarty'.$sep.'cache');
+		$config['extension'] ? $this->extension=$config['extension']: $this->extension='.tpl';
 
 		$this->display = 'index'.$this->extension;
-	
+
 		if($this->config['preloadPlugins']) 
 			foreach($config['preloadPlugins'] as $kp=>$vp)
 				$this->addPlugin($vp);
@@ -111,8 +102,6 @@ class SmartyResource extends Smarty implements Resource, ViewInterface
 	public function getTemplate() { return $this->template; }
 	public function setTemplate($template) { $this->template=$template.$this->extension; }
 	public function getCacheId() {return $this->cacheId;}
-	public function getTheme() { return $this->theme; }
-	public function setTheme($theme) { $this->theme=$theme; }
 	public function fetchTemplate($val) { return $this->fetch($val.$this->extension); }
 
     public function select($varname, $sql, $is_html_options=false, $sql_assoc=DatabaseInterface::STRICTER_DB_SQL_ASSOC, &$dbinstance=null) {

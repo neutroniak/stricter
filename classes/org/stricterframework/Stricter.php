@@ -40,11 +40,11 @@ class Stricter
 		if(!isset($this->config['site_dir']))
 			$this->config['site_dir'] = realpath('.'); 
 
-		if(!isset($this->config['themes_dir']))
-			$this->config['themes_dir'] = $this->config['site_dir'].DIRECTORY_SEPARATOR.'themes';
+		if(!isset($this->config['theme']))
+			$this->config['theme'] = 'default';
 
-		if(!isset($this->config['languages_dir']))
-			$this->config['languages_dir'] = $this->config['site_dir'].DIRECTORY_SEPARATOR.'languages';
+		if(!isset($this->config['lang_dir']))
+			$this->config['lang_dir'] = $this->config['site_dir'].DIRECTORY_SEPARATOR.'lang';
 
 		$newini = $this->config['site_dir'].DIRECTORY_SEPARATOR.'classes'.PATH_SEPARATOR.
 				dirname(__FILE__).DIRECTORY_SEPARATOR.'..'.DIRECTORY_SEPARATOR.'..'.PATH_SEPARATOR.
@@ -79,7 +79,7 @@ class Stricter
 				$this->log("Resource ".$name.' cannot be injected because it does not have a Resource class', E_ERROR);
 				return null;
 			}
-			$checkinc = @include_once($this->resources[$name]['class'].'.php') ;
+			$checkinc = include_once($this->resources[$name]['class'].'.php') ;
 			if($checkinc===false){
 				$this->log("Resource ".$this->resources[$name]['class'].' cannot be found on include_path.', E_ERROR);
 				return null;
@@ -141,7 +141,7 @@ class Stricter
 		$this->action=$this->routes[$path][1];
 
 		if($inc){
-			include_once($this->config['languages_dir'].'/'.$this->config['locale'].'.'.$this->config['charset'].'/index.php'); #NLS common (required)
+			include_once($this->config['lang_dir'].'/'.$this->config['locale'].'.'.$this->config['charset'].'/index.php'); #NLS common (required)
 
 			$obj = new $sobj();
 			$obj->stricter =& $this;
@@ -164,7 +164,6 @@ class Stricter
 			call_user_func( array(&$obj, $this->routes[$path][1]) );
 			header('Content-type:'.$this->contentType.'; charset='.$this->config['charset']);
 
-			$this->defaultView->setTheme($this->config['theme']);
 			$this->defaultView->assign('template', $this->defaultView->getTemplate() );
 
 			ob_clean();
@@ -327,8 +326,6 @@ interface ViewInterface {
 	function getDisplay();
 	function setTemplate($val);
 	function getTemplate();
-	function setTheme($val);
-	function getTheme();
 	function fetchTemplate($tpl);
 }
 
