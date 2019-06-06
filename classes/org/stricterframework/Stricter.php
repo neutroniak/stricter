@@ -16,7 +16,6 @@ class Stricter
 	private $resources;
 	private $resourceObjects=array();
 	private $defaultDatabase;
-	private $defaultView;
 	private $defaultLogger;
 	private $action='index';
 	private $mdl;
@@ -89,8 +88,10 @@ class Stricter
 
 			$this->resourceObjects[$name]=&$res;
 
-			if($res instanceof ViewInterface && !$this->defaultView)
-				$this->defaultView=&$res;
+			if($res instanceof ViewInterface && !$this->view) {
+				//$this->defaultView=&$res;
+				$this->view=&$res;
+			}
 			if($res instanceof DatabaseInterface && !$this->defaultDatabase)
 				$this->defaultDatabase=$res;
 
@@ -98,10 +99,10 @@ class Stricter
 		}
 	}
 
-	public function dispatch(){
+	public function dispatch() {
 		$getmdl = preg_replace('/[^a-zA-Z0-9-_\/\.]/','', $_GET['mdl']);
 
-		$ex=explode('/', $getmdl);
+		$ex = explode('/', $getmdl);
 
 		$path=null;
 		$params=array();
@@ -145,31 +146,29 @@ class Stricter
 
 			$obj = new $sobj();
 			$obj->stricter =& $this;
-			if($this->defaultView){
-				$obj->view=&$this->defaultView;
-				if($obj->view->getTemplate()=="")
-					$obj->view->setTemplate($tplName);
-				$obj->view->assign('mdl', $tplBase);
+			if($this->view){
+				if($this->view->getTemplate()=="")
+					$this->view->setTemplate($tplName);
+				$this->view->assign('mdl', $tplBase);
 			}
 
 			$this->mdl=$tplBase;
 
-			$obj->params=&$params; # send parameters to controller
 			if($this->defaultLogger) {
 				$obj->stricter->logger=&$this->defaultLogger;
 			}
 			if(method_exists($obj, '__init'))
 				$obj->__init();
 
-			call_user_func( array(&$obj, $this->routes[$path][1]) );
+			call_user_func_array( array(&$obj, $this->routes[$path][1]), $params);
 			header('Content-type:'.$this->contentType.'; charset='.$this->config['charset']);
 
-			$this->defaultView->assign('template', $this->defaultView->getTemplate() );
+			$this->view->assign('template', $this->view->getTemplate() );
 
 			ob_clean();
 			ob_start();
 
-			$this->defaultView->output();
+			$this->view->output();
 		} else {
 			$this->callError("LANG_PAGE_NOT_FOUND", 404);
 		}
@@ -187,8 +186,8 @@ class Stricter
 		include_once("org/stricterframework/http/HttpStatus.php");
 		if($httpCode!=null)
 			header(constant('HttpStatus::HTTP_'.$httpCode));
-		$this->defaultView->assign('errmsg', $code);
-		$this->defaultView->setDisplay('error');
+		$this->view->assign('errmsg', $code);
+		$this->view->setDisplay('error');
 	}
 
 	public function session($sessName, $lifetime=null){
@@ -288,7 +287,6 @@ class Stricter
 	public function setConfig($item, $itemval) { $this->config[$item]=$itemval; }
 	public function getAction() { return $this->action; }
 	public function getMdl() { return $this->mdl; }
-	public function getDefaultView(){return $this->defaultView;}
 	public function getDefaultDatabase(){return $this->defaultDatabase;}
 	public function setDefaultLogger(&$logger){
 		if($this->defaultLogger==null) {
@@ -302,13 +300,10 @@ class Stricter
 }
 
 // interfaces
-
 interface Controller {
-	public function index();
 }
 
 interface Resource {
-	
 }
 
 interface LoggerInterface {
