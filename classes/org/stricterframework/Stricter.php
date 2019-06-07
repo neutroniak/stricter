@@ -89,7 +89,6 @@ class Stricter
 			$this->resourceObjects[$name]=&$res;
 
 			if($res instanceof ViewInterface && !$this->view) {
-				//$this->defaultView=&$res;
 				$this->view=&$res;
 			}
 			if($res instanceof DatabaseInterface && !$this->defaultDatabase)
