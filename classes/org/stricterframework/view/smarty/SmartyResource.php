@@ -72,10 +72,7 @@ class SmartyResource extends Smarty implements Resource, ViewInterface
 		$this->caching=2;
 		$this->cacheId=sha1(serialize($aparams));
 
-		if($this->version>3)
-			$isCached = $this->isCached($this->display, $this->cacheId);
-		else
-			$isCached = $this->is_cached($this->display, $this->cacheId);
+		$isCached = $this->isCached($this->display, $this->cacheId);
 
 		if($isCached) {
 			$this->compile_check=false;
