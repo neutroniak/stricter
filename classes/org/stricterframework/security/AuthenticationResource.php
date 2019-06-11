@@ -16,7 +16,10 @@ class AuthenticationResource implements Resource
 		ini_set('session.use_strict_mode','On');
 		ini_set('session.sid_length','256');
 
-		session_set_cookie_params(4000, "/", null, true, true);
+		if($config['session']['lifetime'])
+			$lifetime=$config['session']['lifetime'];
+
+		session_set_cookie_params($lifetime, "/", null, true, true);
 		session_name("STRICTER");
 		session_start();
 
