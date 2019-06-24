@@ -19,6 +19,7 @@ class Stricter
 	private $defaultLogger;
 	private $action='index';
 	private $mdl;
+	private $path;
 	private static $instance;
 
 	public $view;
@@ -60,6 +61,33 @@ class Stricter
 		set_error_handler( array($this, 'setErrorHandler') );
 
 		set_exception_handler( array($this, 'setExceptionHandler') );
+
+		$this->requestBroker($_GET['mdl']);
+	}
+
+	private function requestBroker($mdl) {
+		$getmdl = preg_replace('/[^a-zA-Z0-9-_\/\.]/','', $mdl);
+
+		$ex = explode('/', $getmdl);
+
+		$path=null;
+		$params=array();
+
+		foreach($ex as $k=>$v) {
+			if($abs===true || preg_match('/[^a-zA-Z\-_\.]/', $v)){
+				array_push($params, $v);
+			} else {
+				$path.='/'.$v;
+				if($this->routes[$path][3]==true)
+					$abs=true;
+			}
+		}
+
+		if($path!='/' && (strrpos($path,'/')==strlen($path)-1))
+			$path=substr($path,0,-1);
+
+		$this->path=$path;
+		$this->params=$params;
 	}
 
 	public function inject($name){
@@ -99,31 +127,14 @@ class Stricter
 	}
 
 	public function dispatch() {
-		$getmdl = preg_replace('/[^a-zA-Z0-9-_\/\.]/','', $_GET['mdl']);
 
-		$ex = explode('/', $getmdl);
-
-		$path=null;
-		$params=array();
-
-		foreach($ex as $k=>$v) {
-			if($abs==1 || preg_match('/[^a-zA-Z\-_\.]/', $v)){
-				array_push($params, $v);
-			} else {
-				$path.='/'.$v;
-				if($this->routes[$path][3]==true)
-					$abs=1;
-			}
-		}
-
-		if($path!='/' && (strrpos($path,'/')==strlen($path)-1))
-			$path=substr($path,0,-1);
+		$path=$this->path;
 
 		$sobj = substr(strrchr($this->routes[$path][0], DIRECTORY_SEPARATOR), 1);
 
 		if(!$sobj){
 			$this->callError("LANG_PAGE_NOT_FOUND",  404);
-			return;
+			return null;
 		}
 
 		$tplName=null;
@@ -134,8 +145,9 @@ class Stricter
 			$tplName = $path.'/index';
 		else
 			$tplName = $path;
-		$tplBase = substr( $tplName, 1, strrpos($tplName,'/')-1 );
+		$tplBase = substr($tplName, 1, strrpos($tplName,'/')-1);
 		$tplName = substr($tplName,1);
+
 		$inc = include_once($this->routes[$path][0].'.php');
 
 		$this->action=$this->routes[$path][1];
@@ -159,7 +171,8 @@ class Stricter
 			if(method_exists($obj, '__init'))
 				$obj->__init();
 
-			call_user_func_array( array(&$obj, $this->routes[$path][1]), $params);
+			call_user_func_array( array(&$obj, $this->action), $this->params );
+
 			header('Content-type:'.$this->contentType.'; charset='.$this->config['charset']);
 
 			$this->view->assign('template', $this->view->getTemplate() );
@@ -295,6 +308,7 @@ class Stricter
 			set_exception_handler( array($logger, 'log') );
 		}
 	}
+	public function getPath(){return $this->path;}
 	public function version(){return self::VERSION_MAJOR.'.'.self::VERSION_MINOR.'.'.self::VERSION_PATCH;}
 }
 
