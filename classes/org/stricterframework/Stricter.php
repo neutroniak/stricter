@@ -99,7 +99,7 @@ class Stricter
 			return $this->resourceObjects[$name];
 		} else {
 			if($this->resources[$name]===null || !is_array($this->resources[$name])) {
-				$this->log("Resource ".$name.' cannot be injected. Check config file if the resource exists or is configured correctly.', E_ERROR);
+				$this->log("Resource ".$name.' could be injected. Check config file if the resource exists or is configured correctly.', E_ERROR);
 				return null;
 			}
 			if($this->resources[$name]['class']=="") {
