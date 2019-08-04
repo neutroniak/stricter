@@ -21,7 +21,7 @@ class BoxPlugin extends BasicPlugin
 		parent::init($params, $objvar);
 		$str='<div class="st-box '.$params['class'].'">
 				<div><a class="st-ajaxlink" href="'.$params['link'].'">'.$params['link'].'</a></div>
-				<div class="st-box-content st-box-content-'.$params['name'].'">'.$params['content'].'</div>
+				<div class="st-box-content st-box-content-'.$params['name'].'"><img style="opacity: 0.7;" src="/themes/default/images/loaderA64.gif"/></div>
 			</div>';
 		if($params['ajax']){
 			$str.='<script type="text/javascript">
