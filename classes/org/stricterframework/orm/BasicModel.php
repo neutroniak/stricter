@@ -78,7 +78,7 @@ class BasicModel
 						$v->filterPost($_POST[$fieldhash]); //is dirty
 					}
 				} else if ($v instanceof BasicModel) {
-					if($v->_fk->getValue()!=NULL && $v->getRelation()==RELATION_HAS){
+					if($v->_fk->getValue()!=NULL && $v->getRelation()==BasicModel::RELATION_HAS){
 						$v->find($v->_fk->getValue());
 					} else if($v->getRelation()==RELATION_MANY) {
 						$pk=$this->getPrimaryKey();
@@ -114,7 +114,7 @@ class BasicModel
 							$v->filterPost($_POST[$fieldhash]); //is dirty
 						}
 					} else if ($v instanceof BasicModel) {
-						if($v->_fk->getValue()!=NULL && $v->getRelation()==RELATION_HAS){
+						if($v->_fk->getValue()!=NULL && $v->getRelation()==BasicModel::RELATION_HAS){
 							$v->find($v->_fk->getValue());
 						} else if($v->getRelation()==RELATION_MANY){
 							$pk=$this->getPrimaryKey();
@@ -148,7 +148,7 @@ class BasicModel
 	public function has($alias, $obj, $field) {
 		$this->$alias = new $obj($this->getAlias()."_".$alias);
 		$fk=$this->$alias->getPrimaryKey();
-		$this->$alias->_relation=RELATION_HAS;
+		$this->$alias->_relation=BasicModel::RELATION_HAS;
 		$fknm=$fk[0]->getName();
 		$this->$alias->setFk($this->$field);
 		$this->$alias->setFkNm($field);
