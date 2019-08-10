@@ -39,11 +39,10 @@ class HeadPlugin extends BasicPlugin
 			$str.='<meta http-equiv="pragma" content="no-cache"/>';
 			$str.='<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">';
 			$str.='<meta http-equiv="cache-control" content="no-cache"/>';
+			$str.='<script src="https://code.jquery.com/jquery-1.12.1.min.js" integrity="sha256-I1nTg78tSrZev3kjvfdM5A5Ak/blglGzlaZANLPDl3I=" crossorigin="anonymous"></script>'."\n";
 			$str.='<link href="'.$webpath.'/themes/'.$theme.'/images/favicon.png" rel="shortcut icon" type="image/png"/>';
 			$str.='<link href="'.$webpath.'/themes/'.$theme.'/css/global.css" rel="stylesheet" type="text/css"/>'."\n";
 			$str.='<script src="'.$webpath.'/js/global.js" type="text/javascript" ></script>'."\n";
-			$str.='<script src="https://code.jquery.com/jquery-1.12.1.min.js" integrity="sha256-I1nTg78tSrZev3kjvfdM5A5Ak/blglGzlaZANLPDl3I="
-     crossorigin="anonymous"></script>'."\n";
 		}
 		$str.=' <script type="text/javascript" src="'.$webpath.'/stricter/javascript/stricter.js"></script>'."\n";
 		
