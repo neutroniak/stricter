@@ -19,10 +19,10 @@ class BoxPlugin extends BasicPlugin
 	function box($params, $smarty)
 	{
 		parent::init($params, $objvar);
-		$str='<div class="st-box '.$params['class'].'">
-				<div><a class="st-ajaxlink" href="'.$params['link'].'">'.$params['link'].'</a></div>
+		$str='<a class="st-ajaxlink" href="'.$params['link'].'"><div class="st-box '.$params['class'].'">'.$params['link'].'
+				<div></div>
 				<div class="st-box-content st-box-content-'.$params['name'].'"><img style="opacity: 0.7;" src="/themes/default/images/loaderA64.gif"/></div>
-			</div>';
+			</div></a>';
 		if($params['ajax']){
 			$str.='<script type="text/javascript">
 			$.ajax({ url:"'.$params['ajax'].'/?ajax=1", dataType:"text", method:"GET"})
