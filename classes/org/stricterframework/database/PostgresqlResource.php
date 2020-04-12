@@ -103,6 +103,17 @@ class PostgresqlResource implements Resource, DatabaseInterface
 		return $arr;
 	}
 
+	function fetchOptions(&$query) {
+		$arr = array();
+
+		while($r = pg_fetch_array($query, null, DatabaseInterface::STRICTER_DB_SQL_NUM)) {
+			$k=$r[0];
+			$arr[$k]=$r[1];
+		}
+
+		return $arr;
+	}
+
 	function free(&$query) {
 		pg_free_result($query);
 	}

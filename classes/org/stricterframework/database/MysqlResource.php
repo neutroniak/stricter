@@ -73,6 +73,27 @@ class MysqlResource implements Resource, DatabaseInterface
 		return $r;
 	}
 
+	function fetchAll(&$query, $sql_assoc=DatabaseInterface::STRICTER_DB_SQL_ASSOC) {
+		$arr = array();
+
+		while($r = mysql_fetch_array($query, $sql_assoc)) {
+			array_push($arr, $r);
+		}
+				
+		return $arr;
+	}
+
+	function fetchOptions(&$query) {
+		$arr = array();
+
+		while($r = mysql_fetch_array($query, DatabaseInterface::STRICTER_DB_SQL_NUM)) {
+			$k=$r[0];
+			$arr[$k]=$r[1];
+		}
+
+		return $arr;
+	}
+
 	function free(&$query) {
 		mysql_free_result($query);
 	}

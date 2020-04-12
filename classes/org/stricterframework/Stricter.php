@@ -349,6 +349,7 @@ interface DatabaseInterface {
 	function numrows(&$resource);
 	function fetch(&$resource, $sql_assoc=Database::STRICTER_DB_SQL_ASSOC);
 	function fetchAll(&$resource, $sql_assoc=Database::STRICTER_DB_SQL_ASSOC);
+	function fetchOptions(&$resource);
 	function free(&$resource);
 	function execute($query, $params);
 	function disconnect();
