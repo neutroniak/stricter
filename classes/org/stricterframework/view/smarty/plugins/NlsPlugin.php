@@ -19,6 +19,17 @@ class NlsPlugin extends BasicPlugin
 		if(defined($wordto))
 			$content = @constant($wordto);
 
+		if(count($params)>0) {
+
+			if($params['upper'])
+				$content=strtoupper($content);
+
+			if($params['lower'])
+				$content=strtolower($content);
+
+			if($params['capital'])
+				$content=ucfirst($content);
+		}
 		return $content;
 	}
 }
