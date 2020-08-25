@@ -8,13 +8,16 @@ class ButtonPlugin extends BasicPlugin
 	function __init()
 	{
 		$this->smarty->registerPlugin('function', 'button', array(&$this,'button'));
+		$this->addAttribute('href');
 	}
 
 	function button($params, $smarty)
 	{
 		parent::init($params, $params);
 
-		$str .= "<input type=\"button\" ";
+		if($params['href'])
+			$href=' onclick="window.location.href=\''.$params['href'].'\'" ';
+		$str .= "<input type=\"button\" ".$href;
 
 		$str .= parent::attributes();
 
