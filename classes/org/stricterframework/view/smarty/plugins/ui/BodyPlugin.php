@@ -15,7 +15,7 @@ class BodyPlugin extends BasicPlugin
 	function body($params, $content, $smarty)
 	{
 		$str ="<body>\n";
-		$str .='	<div class="st-icon-loading" style="display:none;"><img alt="" src="/themes/default/images/loaderA64.gif" /></div>';
+		$str .='	<div class="st-icon-loading" style="display:none;"></div>';
 		$str.=$content;
 		$str.="\n".'</body>'."\n";
 		if($content)

@@ -20,7 +20,7 @@ class HeadPlugin extends BasicPlugin
 		$theme=Stricter::getInstance()->getConfig('theme');
 		$webpath=Stricter::getInstance()->getConfig('webpath');
 		$charset=Stricter::getInstance()->getConfig('charset');
-		$mdl=Stricter::getInstance()->getMdl();
+		$module=Stricter::getInstance()->getModule();
 
 		$str="<head>\n";
 		$str.='	<meta http-equiv="content-type" content="text/html; charset='.$charset.'"/>';
@@ -39,7 +39,7 @@ class HeadPlugin extends BasicPlugin
 			$str.='<meta http-equiv="pragma" content="no-cache"/>';
 			$str.='<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">';
 			$str.='<meta http-equiv="cache-control" content="no-cache"/>';
-			$str.='<script src="https://code.jquery.com/jquery-1.12.1.min.js" integrity="sha256-I1nTg78tSrZev3kjvfdM5A5Ak/blglGzlaZANLPDl3I=" crossorigin="anonymous"></script>'."\n";
+			$str.='<script src="https://code.jquery.com/jquery-1.12.4.min.js" crossorigin="anonymous"></script>'."\n";
 			$str.='<link href="'.$webpath.'/themes/'.$theme.'/images/favicon.png" rel="shortcut icon" type="image/png"/>';
 			$str.='<link href="'.$webpath.'/themes/'.$theme.'/css/global.css" rel="stylesheet" type="text/css"/>'."\n";
 			$str.='<script src="'.$webpath.'/js/global.js" type="text/javascript" ></script>'."\n";
@@ -48,7 +48,7 @@ class HeadPlugin extends BasicPlugin
 		
 		$str.='	<script type="text/javascript">var webpath="'.$webpath.'";var theme="'.$theme.'";';
 		$ajax ?	$str.='var isAjax=true;' : $str.='var isAjax=false;';
-		$str.='stricter.ajax.charset="UTF-8";var mdl="'.$mdl.'";</script>'."\n";
+		$str.='stricter.ajax.charset="UTF-8";var module="'.$module.'";</script>'."\n";
 		
 		$str.=' <script type="text/javascript" src="'.$webpath.'/stricter/javascript/stricter-ui.js"></script>'."\n";
 		if($params['jquery-ui-theme']) {
