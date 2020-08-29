@@ -11,7 +11,7 @@ class UploadPlugin extends BasicPlugin
 		$this->smarty->registerPlugin("function", "upload", array(&$this,"upload") );
 	}
 
-	function upload($params, &$smarty)
+	function upload($params, $smarty)
 	{
 		$objvar=&$params['name'];
 	
