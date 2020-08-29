@@ -10,7 +10,6 @@ class Stricter
 	const OUT_XLS = 'application/xls';
 
 	private $contentType=self::OUT_HTML;
-	private $requestMethod;
 	private $config;
 	private $routes;
 	private $resources;
@@ -18,14 +17,15 @@ class Stricter
 	private $defaultDatabase;
 	private $defaultLogger;
 	private $action='index';
-	private $mdl;
+	private $module;
 	private $path;
+	private $error;
 	private static $instance;
 
 	public $view;
 	public $logger;
 
-	public function __construct(){
+	public function __construct() {
 
 		include('config.php');
 		include('routes.php');
@@ -62,13 +62,14 @@ class Stricter
 
 		set_exception_handler( array($this, 'setExceptionHandler') );
 
-		$this->requestBroker($_GET['mdl']);
+		//$_GET['mdl'] ? $mdl=$_GET['mdl'] : $mdl=$_GET['module']; // TODO - depreacate get mdl
+		$this->requestBroker($_GET['module']);
 	}
 
-	private function requestBroker($mdl) {
-		$getmdl = preg_replace('/[^a-zA-Z0-9-_\/\.]/','', $mdl);
+	private function requestBroker($module) {
+		$getmodule = preg_replace('/[^a-zA-Z0-9-_\/\. ]/','', $module);
 
-		$ex = explode('/', $getmdl);
+		$ex = explode('/', $getmodule);
 
 		$path=null;
 		$params=array();
@@ -90,7 +91,7 @@ class Stricter
 		$this->params=$params;
 	}
 
-	public function inject($name){
+	public function inject($name) {
 		if(strlen(trim($name))===0) {
 			$this->log("Resource with no name: ".$name, E_ERROR);
 			return;
@@ -133,7 +134,7 @@ class Stricter
 		$sobj = substr(strrchr($this->routes[$path][0], DIRECTORY_SEPARATOR), 1);
 
 		if(!$sobj){
-			$this->callError("LANG_PAGE_NOT_FOUND",  404);
+			$this->callError(404, "LANG_PAGE_NOT_FOUND");
 			return null;
 		}
 
@@ -160,10 +161,9 @@ class Stricter
 			if($this->view){
 				if($this->view->getTemplate()=="")
 					$this->view->setTemplate($tplName);
-				$this->view->assign('mdl', $tplBase);
 			}
 
-			$this->mdl=$tplBase;
+			$this->module=$tplBase;
 
 			if($this->defaultLogger) {
 				$obj->stricter->logger=&$this->defaultLogger;
@@ -171,19 +171,30 @@ class Stricter
 			if(method_exists($obj, '__init'))
 				$obj->__init();
 
-			call_user_func_array( array(&$obj, $this->action), $this->params );
+			$cufa=call_user_func_array( array(&$obj, $this->action), $this->params );
+			if($cufa===false)
+				$this->callError(404, "LANG_PAGE_NOT_FOUND");
+
+			$this->assignStricter();
 
 			header('Content-type:'.$this->contentType.'; charset='.$this->config['charset']);
-
-			$this->view->assign('template', $this->view->getTemplate() );
-
 			ob_clean();
 			ob_start();
 
 			$this->view->output();
 		} else {
-			$this->callError("LANG_PAGE_NOT_FOUND", 404);
+			$this->callError(404, "LANG_PAGE_NOT_FOUND");
 		}
+	}
+
+	private function assignStricter() {
+		$stricter = array();
+		$stricter['config'] = $this->config;
+		$stricter['module'] = $this->module;
+		$stricter['action'] = $this->action;
+		$stricter['error'] =& $this->error;
+		$stricter['template'] = $this->view->getTemplate();
+		$this->view->assign('stricter', $stricter);
 	}
 
 	public function setExceptionHandler($errstr){
@@ -194,11 +205,11 @@ class Stricter
 		$this->log($errstr, $errno);
 	}
 
-	public function callError($code, $httpCode){
+	public function callError($httpStatus, $httpMessage=null){
 		include_once("org/stricterframework/http/HttpStatus.php");
-		if($httpCode!=null)
-			header(constant('HttpStatus::HTTP_'.$httpCode));
-		$this->view->assign('errmsg', $code);
+		ob_clean();
+		header(constant('HttpStatus::HTTP_'.$httpStatus));
+		$this->error=$httpMessage;
 		$this->view->setDisplay('error');
 	}
 
@@ -211,7 +222,7 @@ class Stricter
 			return false;
 	}
 
-	public function log($message, $mlevel=E_WARNING, $logdir=null, $dotrace=false){
+	public function log($message, $mlevel=E_WARNING, $logdir=null, $dotrace=false) { #TODO - remove this function, logger only by stricter logger
 		if($this->defaultLogger) {
 			$this->defaultLogger->log($message, $mlevel);
 			return;
@@ -298,7 +309,7 @@ class Stricter
 	public function getConfig($item=null) { if($item) return $this->config[$item];else return $this->config; }
 	public function setConfig($item, $itemval) { $this->config[$item]=$itemval; }
 	public function getAction() { return $this->action; }
-	public function getMdl() { return $this->mdl; }
+	public function getModule() { return $this->module; }
 	public function getDefaultDatabase(){return $this->defaultDatabase;}
 	public function setDefaultLogger(&$logger){
 		if($this->defaultLogger==null) {

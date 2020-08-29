@@ -41,7 +41,6 @@ class SmartyResource extends Smarty implements Resource, ViewInterface
 		} else {
 			$this->compile_check=true;
 		}
-		$this->assign('stricter',$cfg);
 	}
 
 	public function addPlugin($strcomponent){
@@ -85,7 +84,6 @@ class SmartyResource extends Smarty implements Resource, ViewInterface
 	}
 
 	public function output(){
-		$this->assign('template',$this->template);
 		$this->display($this->display, $this->cacheId);
 	}
 
@@ -101,7 +99,7 @@ class SmartyResource extends Smarty implements Resource, ViewInterface
 	public function getCacheId() {return $this->cacheId;}
 	public function fetchTemplate($val) { return $this->fetch($val.$this->extension); }
 
-    public function select($varname, $sql, $is_html_options=false, $sql_assoc=DatabaseInterface::STRICTER_DB_SQL_ASSOC, &$dbinstance=null) {
+    public function select($varname, $sql, $is_html_options=false, $sql_assoc=DatabaseInterface::STRICTER_DB_SQL_ASSOC, &$dbinstance=null) { #TODO - deprecated: use db's fetchAll() instead
 		if($dbinstance==null) {
 			$dbi=Stricter::getInstance()->getDefaultDatabase();
 		}
