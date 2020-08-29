@@ -62,7 +62,6 @@ class Stricter
 
 		set_exception_handler( array($this, 'setExceptionHandler') );
 
-		//$_GET['mdl'] ? $mdl=$_GET['mdl'] : $mdl=$_GET['module']; // TODO - depreacate get mdl
 		$this->requestBroker($_GET['module']);
 	}
 
