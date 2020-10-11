@@ -1,8 +1,10 @@
 <?php
 
-class ErrorPlugin
+class ErrorPlugin extends BasicPlugin
 {
 	public $smarty;
+	private $objvar;
+	private $params;
 
 	function __init()
 	{
@@ -12,14 +14,23 @@ class ErrorPlugin
 	function error($params, $smarty)
 	{
 		$objvar=&$params['name'];
+		parent::init($params, $objvar);
 
-		if($params["prefix"] && $objvar->getError() )
+		$err = $objvar->getError();
+
+		$str .= '<span ';
+		$str .= parent::attributes();
+		$str .= '>';
+
+		if($params["prefix"] && $err )
 			$str .= $params["prefix"];
 
-		$str .= $objvar->getError();
+		$str .= $err;
 
-		if($params["sufix"] && $objvar->getError())
+		if($params["sufix"] && $err)
 			$str .= $params["sufix"];
+
+		$str .= '</span>';
 
 		return $str;
 	}
