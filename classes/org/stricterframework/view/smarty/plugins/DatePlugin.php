@@ -34,7 +34,7 @@ class DatePlugin extends BasicPlugin
 		if($params['field']){
 			$str.=$this->selectBox($params, $objvar);
 		} else {
-			$str.=$this->inputBox($params,$objvar);
+			$str.=$this->inputBox($params, $objvar);
 		}
 
 		return $str;
