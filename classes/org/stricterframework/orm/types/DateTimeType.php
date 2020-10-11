@@ -65,7 +65,7 @@ class DateTimeType extends BasicType
 			}
 		}
 
-		if($this->getValue()!=null && !$isdate) {
+		if($this->getValue()!=null && !$isdate && $this->getRequired()===true) {
 			$this->setError( LANG_INVALID_DATE_ERROR );
 			return 1;
 		}

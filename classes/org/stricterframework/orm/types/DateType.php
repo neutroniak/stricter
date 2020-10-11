@@ -21,7 +21,8 @@ class DateType extends BasicType
 			$this->year=$newval['year'];
 			$this->month=$newval['month'];
 			$this->day=$newval['day'];
-			$this->_value=$this->year.'-'.$this->month.'-'.$this->day;
+			if($this->year & $this->month & $this->day)
+				$this->_value=$this->year.'-'.$this->month.'-'.$this->day;
 		} else {
 			if(strlen($newval)==0)
 				return;
@@ -35,7 +36,10 @@ class DateType extends BasicType
 			$this->year=$date->format('Y');
 			$this->month=$date->format('m');
 			$this->day=$date->format('d');
-			$this->_value=$this->year.'-'.$this->month.'-'.$this->day;
+			if($this->year && $this->month && $this->day)
+				$this->_value=$this->year.'-'.$this->month.'-'.$this->day;
+			else
+				return null;
 		} 
 	}
 
@@ -56,7 +60,7 @@ class DateType extends BasicType
 			}
 		}
 
-		if($this->getValue()!=null && !$isdate) {
+		if($this->getValue()!=null && !$isdate && $this->getRequired()===true) {
 			$this->setError( LANG_INVALID_DATE_ERROR );
 			return 1;
 		}
