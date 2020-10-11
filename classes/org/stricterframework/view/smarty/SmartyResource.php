@@ -35,7 +35,7 @@ class SmartyResource extends Smarty implements Resource, ViewInterface
 				$this->addPlugin($vp);
 
 		$cfg = Stricter::getInstance()->getConfig();
-		if($cfg['desenv']===false) {
+		if($cfg['develop']===false) {
 			$this->force_compile=false;
 			$this->compile_check=false;
 		} else {
