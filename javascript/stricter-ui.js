@@ -1,4 +1,5 @@
 function StricterUi() {
+	this.loginUrl = '/login';
 }
 var MOBILE_WIDTH=480;
 //========
@@ -29,8 +30,9 @@ StricterUi.prototype.getContent = function(nurl){
 		}
 	}).success(function(res){
 		$("#st-content").html(res);
-	}).fail(function(){
-		console.log("Failed request: "+nurl);
+	}).fail(function(res){
+		if(res.status==401 || res.status==403)
+			window.location.replace(this.loginUrl);
 	}).complete(function(){
 		stricterui.ajaxReload();
 	});
@@ -46,8 +48,9 @@ StricterUi.prototype.postContent = function(nurl, formid){
 		contentType:'application/x-www-form-urlencoded'
 	}).success(function(res){
 		$("#st-content").html(res);
-	}).fail(function(){
-		console.log("Failed request: "+nurl);
+	}).fail(function(res){
+		if(res.status==401 || res.status==403)
+			window.location.replace(this.loginUrl);
 	}).complete(function(){
 		stricterui.ajaxReload();
 	});

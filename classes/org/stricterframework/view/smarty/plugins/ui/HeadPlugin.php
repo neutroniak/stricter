@@ -20,6 +20,8 @@ class HeadPlugin extends BasicPlugin
 		$theme=Stricter::getInstance()->getConfig('theme');
 		$webpath=Stricter::getInstance()->getConfig('webpath');
 		$charset=Stricter::getInstance()->getConfig('charset');
+		$develop=Stricter::getInstance()->getConfig('develop');
+		$loginUrl=Stricter::getInstance()->getConfig('login-url'); // when security injection sets it up
 		$module=Stricter::getInstance()->getModule();
 
 		$str="<head>\n";
@@ -44,13 +46,18 @@ class HeadPlugin extends BasicPlugin
 			$str.='<link href="'.$webpath.'/themes/'.$theme.'/css/global.css" rel="stylesheet" type="text/css"/>'."\n";
 			$str.='<script src="'.$webpath.'/js/global.js" type="text/javascript" ></script>'."\n";
 		}
-		$str.=' <script type="text/javascript" src="'.$webpath.'/stricter/javascript/stricter.js"></script>'."\n";
-		
-		$str.='	<script type="text/javascript">var webpath="'.$webpath.'";var theme="'.$theme.'";';
-		$ajax ?	$str.='var isAjax=true;' : $str.='var isAjax=false;';
-		$str.='stricter.ajax.charset="UTF-8";var module="'.$module.'";</script>'."\n";
-		
-		$str.=' <script type="text/javascript" src="'.$webpath.'/stricter/javascript/stricter-ui.js"></script>'."\n";
+		$develop ? $min='' : $min='.min';
+		$str.='<script type="text/javascript" src="'.$webpath.'/stricter/javascript/stricter'.$min.'.js"></script>'."\n";
+		$str.='<script type="text/javascript" src="'.$webpath.'/stricter/javascript/stricter-ui'.$min.'.js"></script>'."\n";
+		$str.='<script type="text/javascript">';
+		$str.=' var webpath="'.$webpath.'";';
+		$str.=' var theme="'.$theme.'";';
+		$ajax ?	$str.=' var isAjax=true;' : $str.='var isAjax=false;';
+		$str.=' stricter.ajax.charset="UTF-8";';
+		if($loginUrl!="")
+			$str.=' stricterui.loginUrl='.$loginUrl.';';
+		$str.=' var module="'.$module.'";';
+		$str.='</script>'."\n";
 		if($params['jquery-ui-theme']) {
 			$str.=' <link rel="stylesheet" href="https://code.jquery.com/ui/1.11.4/themes/'.$params['jquery-ui-theme'].'/jquery-ui.css"/>'."\n";
 			$str.='<script src="https://code.jquery.com/ui/1.11.4/jquery-ui.min.js" integrity="sha256-xNjb53/rY+WmG+4L6tTl9m6PpqknWZvRt0rO1SRnJzw="

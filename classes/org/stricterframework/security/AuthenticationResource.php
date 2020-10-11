@@ -18,12 +18,22 @@ class AuthenticationResource implements Resource
 
 		$path=$this->stricter->getPath();
 
+		$this->stricter->setConfig('login-url', $config['login-url']);
+
 		if($acl[$path]===false || $path==$config['login-url']) { // open
 			return;
 		}  else {
 			$this->sessionStart();
 			if(!$_SESSION['stricter']) {
-				$this->stricter->redirect('/login');
+				include_once("org/stricterframework/http/HttpStatus.php");
+				ob_clean();
+				header(constant('HttpStatus::HTTP_401'));
+				if($_GET['ajax']==1) {
+					echo '<script>window.location.replace("'.$this->config['login-url'].'");</script>';
+				} else {
+					$this->stricter->redirect($this->config['login-url']);
+				}
+				exit;
 			}
 		}
 	}
