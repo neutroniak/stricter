@@ -55,7 +55,7 @@ class HeadPlugin extends BasicPlugin
 		$ajax ?	$str.=' var isAjax=true;' : $str.='var isAjax=false;';
 		$str.=' stricter.ajax.charset="UTF-8";';
 		if($loginUrl!="")
-			$str.=' stricterui.loginUrl='.$loginUrl.';';
+			$str.=' stricterui.loginUrl="'.$loginUrl.'";';
 		$str.=' var module="'.$module.'";';
 		$str.='</script>'."\n";
 		if($params['jquery-ui-theme']) {
