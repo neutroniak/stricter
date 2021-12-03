@@ -222,6 +222,10 @@ class PostgresqlResource implements Resource, DatabaseInterface
 						return $field->getValue();
 				break;
 
+				case 'JsonType':
+						return "'".$field->getValue()."'";
+				break;
+
 				default:
 					return "'".addslashes($field->getValue())."'";
 				break;
