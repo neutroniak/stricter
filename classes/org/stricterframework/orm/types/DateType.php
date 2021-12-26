@@ -23,8 +23,10 @@ class DateType extends BasicType
 			$this->day=$newval['day'];
 			$this->_value=$this->year.'-'.$this->month.'-'.$this->day;
 		} else {
-			if(strlen($newval)==0)
+			if(strlen($newval)==0){
+				$this->_value=null;
 				return;
+			}
 			if(($format=Stricter::getInstance()->getConfig('date_format'))=="")
 				$format="Y-m-d";
 			$date = DateTime::createFromFormat($format, $newval);
