@@ -10,8 +10,7 @@ class BinaryType extends BasicType
 		$this->setRequired($req);
 	}
 
-	public function setValue($newval)
-	{
+	public function setValue($newval) {
 		if($newval===null) {
 			unset($_FILES[$this->hash]);
 			$this->_value=null;
@@ -29,8 +28,11 @@ class BinaryType extends BasicType
 			$this->setValue(null);
 		} else {
 			if( $_FILES[$hash]['tmp_name'] ) {
-				
 				$path = $_FILES[$hash]['tmp_name'];
+				if( !(is_uploaded_file($_FILES[$hash]["tmp_name"])) ) {
+					$this->setError( LANG_FILE_UPLOAD_NOT_VALID );
+					return false;
+				}
 				$fp=fopen($path, 'r');
 				$content = fread($fp, filesize($path) );
 				$this->setValue($content);
