@@ -19,6 +19,9 @@ class InputPlugin extends BasicPlugin
 	function input($params, $smarty)
 	{
 		$objvar=&$params['name'];
+
+		
+
 		parent::init($params, $objvar);
 
 		if(!$params['value'])
@@ -33,7 +36,7 @@ class InputPlugin extends BasicPlugin
 		if($params["negative"]==true)
 			$size +=1;
 
-		if($params["slice"]){
+		if($params["slice"]) {
 			$slice = '_'.$params["slice"];
 
 			$slicex = explode(',',$params["slice"]);
@@ -42,7 +45,7 @@ class InputPlugin extends BasicPlugin
 				$theval = substr($theval, $slicex[0], $slicex[1]);
 			else
 				$theval = substr($theval, $slicex[0]-1, $slicex[1]);
-			
+
 			$size = $slicex[1];
 		}
 
