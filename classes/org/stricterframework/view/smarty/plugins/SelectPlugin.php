@@ -36,8 +36,6 @@ class SelectPlugin extends BasicPlugin
 			$multiple = ' multiple="multiple" ';
 		}
 
-		
-
 		$str .= parent::csserror();
 
 		$str .= parent::attributes();
@@ -51,7 +49,7 @@ class SelectPlugin extends BasicPlugin
 		else
 			$str .= "<option></option>\n";
 
-		if(count($params["options"])>0){
+		if(isset($params["options"]) && count($params["options"])>0){
 			foreach($params["options"] as $key=>$value) {
 				if( is_array($theval) && in_array($key, $theval) )
 					$sel = 'selected="selected"';

@@ -48,7 +48,7 @@ class PostgresqlResource implements Resource, DatabaseInterface
 		$q = pg_query($this->conn, $sql);
 
 		if($this->debug===true)
-			Stricter::getInstance()->log("Database::query ".$this->error()." on query:\n $sql", E_INFO, null, true);
+			Stricter::getInstance()->log("Database::query ".$this->error()." on query:\n $sql", E_NOTICE, null, true);
 
 		if($this->error()) {
 			Stricter::getInstance()->log("Database::error ".$this->error()." on query:\n $sql", E_ERROR);
@@ -69,7 +69,7 @@ class PostgresqlResource implements Resource, DatabaseInterface
 		$q = pg_execute($this->conn, 'pg_prepare', $params);
 
 		if($this->debug===true)
-			Stricter::getInstance()->log("Database::query ".$this->error()." on query:\n $sql", E_INFO, null, true);
+			Stricter::getInstance()->log("Database::query ".$this->error()." on query:\n $sql", E_NOTICE, null, true);
 
 		if($this->error()) {
 			Stricter::getInstance()->log("Database::error ".$this->error()." on query:\n $sql", E_ERROR);
@@ -185,7 +185,11 @@ class PostgresqlResource implements Resource, DatabaseInterface
 		} else {
 			switch ( $type ) {
 				case 'DateType':
-					$dt = date('Y-m-d H:i:s', $field->getValue());
+					$dt = $field->getValue();
+					return "'".$dt."'";
+				break;
+
+				case 'DateTimeType':
 					$dt = $field->getValue();
 					return "'".$dt."'";
 				break;

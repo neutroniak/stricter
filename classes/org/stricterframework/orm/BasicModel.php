@@ -9,6 +9,12 @@ class BasicModel
 	const RELATION_ONE=2;
 	const RELATION_MANY=3;
 
+	const WHERE_ILIKE='WHERE_ILIKE';
+	const WHERE_LIKE='WHERE_LIKE';
+	const WHERE_EQ='WHERE_EQ';
+	const WHERE_EQ_EXP='WHERE_EQ_EXP';
+	const WHERE_BETWEEN='WHERE_BETWEEN';
+
 	private $db;
 	private $_name;
 	private $_alias;
@@ -47,9 +53,10 @@ class BasicModel
 			$this->db=$db;
 		else
 			$this->db=Stricter::getInstance()->getDefaultDatabase();
+		return $this;
 	}
 
-	public function find($id=null){
+	public function find($id=null) {
 		$classname = $this->_name;
 		$classalias = '_'.$this->_alias;
 		$a_pk = $this->_primaryKey; # TODO - composite needed
@@ -80,57 +87,59 @@ class BasicModel
 				} else if ($v instanceof BasicModel) {
 					if($v->_fk->getValue()!=NULL && $v->getRelation()==BasicModel::RELATION_HAS){
 						$v->find($v->_fk->getValue());
-					} else if($v->getRelation()==RELATION_MANY) {
+					} else if($v->getRelation()==BasicModel::RELATION_MANY) {
 						$pk=$this->getPrimaryKey();
 						$v->where($v->_fknm, 'WHERE_EQ', $pk[0]->getValue());
 						$v->find();
 					}
 				}
 			}
-		} else {
-			if($this->_pageMax!==null && $this->_pageCurrent!==null) {
-				$totalCountSql = 'SELECT _'.$this->_alias.'.* '.$from.$this->_joins.$this->_where;
-				$this->_paginate($totalCountSql);
-			}
+		}
+	}
 
-			$finalsql = 'SELECT _'.$this->_alias.'.*'.$from.$this->_joins.$this->_where.$this->_order.$this->_limit;
-			$q = $this->db->query($finalsql);
-			$n = $this->db->numrows($q);
-			$ser = serialize($this);
-			for($i=0;$i<$n;$i++)
-				array_push($this->_list, unserialize($ser));
-			$i=0;
-			while( $r=$this->db->fetch($q, DatabaseInterface::STRICTER_DB_SQL_ASSOC) ) {
-				foreach($this->_list[$i] as $k=>$v) {
-					if($v instanceof BasicType) {
-						$fieldname=$v->getName();
-						$fieldhash=$v->getHash();
+	public function findAll() {
+		if($this->_pageMax!==null && $this->_pageCurrent!==null) {
+			$totalCountSql = 'SELECT _'.$this->_alias.'.* '.$from.$this->_joins.$this->_where;
+			$this->_paginate($totalCountSql);
+		}
 
-						$v->setValue( $r[$fieldname] ); //read from db
+		$finalsql = 'SELECT _'.$this->_alias.'.*'.$from.$this->_joins.$this->_where.$this->_order.$this->_limit;
+		$q = $this->db->query($finalsql);
+		$n = $this->db->numrows($q);
+		$ser = serialize( $this );
+		for($i=0;$i<$n;$i++)
+			array_push($this->_list, unserialize($ser));
+		$i=0;
+		while( $r=$this->db->fetch($q, DatabaseInterface::STRICTER_DB_SQL_ASSOC) ) {
+			foreach($this->_list[$i] as $k=>$v) {
+				if($v instanceof BasicType) {
+					$fieldname=$v->getName();
+					$fieldhash=$v->getHash();
 
-						if( isset($_POST[$fieldhash]) || isset($_FILES[$fieldhash]) ) {
-							if($_POST[$fieldhash]=="")
-								unset($_POST[$fieldhash]);
-							$v->filterPost($_POST[$fieldhash]); //is dirty
+					$v->setValue( $r[$fieldname] ); //read from db
+
+					if( isset($_POST[$fieldhash]) || isset($_FILES[$fieldhash]) ) {
+						if($_POST[$fieldhash]=="")
+							unset($_POST[$fieldhash]);
+						$v->filterPost($_POST[$fieldhash]); //is dirty
+					}
+				} else if ($v instanceof BasicModel) {
+					if($v->_fk->getValue()!=NULL && $v->getRelation()==BasicModel::RELATION_HAS){
+						$v->find($v->_fk->getValue());
+					} else if($v->getRelation()==RELATION_MANY){
+						$pk=$this->getPrimaryKey();
+						if($pk[0]->getValue()!=NULL) {
+							$pkval=$pk[0]->getValue();
+						} else {
+							$pk=$this->_list[$i]->getPrimaryKey();
+							$pkval=$pk[0]->getValue();
 						}
-					} else if ($v instanceof BasicModel) {
-						if($v->_fk->getValue()!=NULL && $v->getRelation()==BasicModel::RELATION_HAS){
-							$v->find($v->_fk->getValue());
-						} else if($v->getRelation()==RELATION_MANY){
-							$pk=$this->getPrimaryKey();
-							if($pk[0]->getValue()!=NULL) {
-								$pkval=$pk[0]->getValue();
-							} else {
-								$pk=$this->_list[$i]->getPrimaryKey();
-								$pkval=$pk[0]->getValue();
-							}
-							$v->where($v->_fknm, 'WHERE_EQ', $pkval);
-							$v->find();
-						}
+						$v->where($v->_fknm, 'WHERE_EQ', $pkval);
+						$v->find();
 					}
 				}
-				$i++;
 			}
+			$i++;
 		}
 	}
 
@@ -141,7 +150,7 @@ class BasicModel
 		$this->$alias = new $obj("_".$this->getAlias()."_".$alias);
 		$this->$alias->setFk($this->$alias->$fk);
 		$this->$alias->setFkNm($fk);
-		$this->$alias->_relation=RELATION_MANY;
+		$this->$alias->_relation=BasicModel::RELATION_MANY;
 		return $this->$alias;
 	}
 
@@ -239,19 +248,19 @@ class BasicModel
 			$this->_where.=" AND ".$vals;
 
 		switch($criteria) {
-			case WHERE_ILIKE:
+			case BasicModel::WHERE_ILIKE:
 				$this->_where.=" ILIKE '%".$value."%' ";
 			break;
-			case WHERE_LIKE:
+			case BasicModel::WHERE_LIKE:
 				$this->_where.=" LIKE '%".$value."%' ";
 			break;
-			case WHERE_EQ:
+			case BasicModel::WHERE_EQ:
 				$this->_where.="='$value' ";
 			break;
-			case WHERE_EQ_EXP:
+			case BasicModel::WHERE_EQ_EXP:
 				$this->_where.="=$value ";
 			break;
-			case WHERE_BETWEEN:
+			case BasicModel::WHERE_BETWEEN:
 				$this->_where.= sprintf(" BETWEEN '%s' AND '%s' ", $value[0],$value[1]);
 			break;
 			default:

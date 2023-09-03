@@ -21,13 +21,13 @@ class NlsPlugin extends BasicPlugin
 
 		if(count($params)>0) {
 
-			if($params['upper'])
+			if(isset($params['upper']))
 				$content=strtoupper($content);
 
-			if($params['lower'])
+			if(isset($params['lower']))
 				$content=strtolower($content);
 
-			if($params['capital'])
+			if(isset($params['capital']))
 				$content=ucfirst($content);
 		}
 		return $content;

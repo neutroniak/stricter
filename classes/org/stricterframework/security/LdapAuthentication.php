@@ -42,9 +42,9 @@ class LdapAuthentication
 			$arr['groups']=$agroups;
 			return $arr;
 		} else {
-			$this->stricter->log(LANG_USER_PASS_NOT_MATCHING);
+			$this->stricter->log( LANG_USER_PASS_NOT_MATCHING );
 			$this->user->user_password->setValue( "" );
-			$this->user->user_password->setError(LANG_USER_PASS_NOT_MATCHING);
+			$this->user->user_password->setError( LANG_USER_PASS_NOT_MATCHING );
 			return null;
 		}
 	}

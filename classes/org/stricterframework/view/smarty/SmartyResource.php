@@ -22,15 +22,15 @@ class SmartyResource extends Smarty implements Resource, ViewInterface
 		$this->version=self::SMARTY_VERSION;
 		$this->version=preg_replace('/[^0-9\.]/','',self::SMARTY_VERSION);
 		$sep=DIRECTORY_SEPARATOR;
-		$config['templateDir'] ? $this->setTemplateDir($config['templateDir']) : $this->setTemplateDir($site_dir.$sep.'views'.$sep.'smarty'.$sep.'templates');
-		$config['compileDir'] ? $this->setCompileDir($config['compileDir']) : $this->setCompileDir($site_dir.$sep.'views'.$sep.'smarty'.$sep.'templates_c');
-		$config['configDir'] ? $this->setConfigDir($config['configDir']) : $this->setConfigDir($site_dir.$sep.'views'.$sep.'smarty'.$sep.'config');
-		$config['cacheDir'] ? $this->setCacheDir($config['cacheDir']): $this->setCacheDir($site_dir.$sep.'views'.$sep.'smarty'.$sep.'cache');
-		$config['extension'] ? $this->extension=$config['extension']: $this->extension='.tpl';
+		isset($config['templateDir']) ? $this->setTemplateDir($config['templateDir']) : $this->setTemplateDir($site_dir.$sep.'views'.$sep.'smarty'.$sep.'templates');
+		isset($config['compileDir']) ? $this->setCompileDir($config['compileDir']) : $this->setCompileDir($site_dir.$sep.'views'.$sep.'smarty'.$sep.'templates_c');
+		isset($config['configDir']) ? $this->setConfigDir($config['configDir']) : $this->setConfigDir($site_dir.$sep.'views'.$sep.'smarty'.$sep.'config');
+		isset($config['cacheDir']) ? $this->setCacheDir($config['cacheDir']): $this->setCacheDir($site_dir.$sep.'views'.$sep.'smarty'.$sep.'cache');
+		isset($config['extension']) ? $this->extension=$config['extension']: $this->extension='.tpl';
 
 		$this->display = 'index'.$this->extension;
 
-		if($this->config['preloadPlugins']) 
+		if(isset($this->config['preloadPlugins'])) 
 			foreach($config['preloadPlugins'] as $kp=>$vp)
 				$this->addPlugin($vp);
 

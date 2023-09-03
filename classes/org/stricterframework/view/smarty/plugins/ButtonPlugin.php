@@ -15,7 +15,9 @@ class ButtonPlugin extends BasicPlugin
 	{
 		parent::init($params, $params);
 
-		if($params['href'])
+		$href = "";
+
+		if(isset($params['href']))
 			$href=' onclick="window.location.href=\''.$params['href'].'\'" ';
 		$str .= "<input type=\"button\" ".$href;
 

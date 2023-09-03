@@ -73,6 +73,8 @@ class Stricter
 		$path=null;
 		$params=array();
 
+		$abs=false;
+
 		foreach($ex as $k=>$v) {
 			if($abs===true || preg_match('/[^a-zA-Z\-_\.]/', $v)){
 				array_push($params, $v);
@@ -95,10 +97,10 @@ class Stricter
 			$this->log("Resource with no name: ".$name, E_ERROR);
 			return;
 		}
-		if($this->resourceObjects[$name]) {
+		if(isset($this->resourceObjects[$name])) {
 			return $this->resourceObjects[$name];
 		} else {
-			if($this->resources[$name]===null || !is_array($this->resources[$name])) {
+			if(isset($this->resources[$name])===null || !is_array($this->resources[$name])) {
 				$this->log("Resource ".$name.' could be injected. Check config file if the resource exists or is configured correctly.', E_ERROR);
 				return null;
 			}
@@ -139,7 +141,7 @@ class Stricter
 
 		$tplName=null;
 		$tplBase=null;
-		if($this->routes[$path][2])
+		if(isset($this->routes[$path][2]))
 			$tplName='/'.$this->routes[$path][2];
 		else if($this->routes[$path][1]=="index")
 			$tplName = $path.'/index';
