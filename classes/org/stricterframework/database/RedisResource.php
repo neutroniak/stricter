@@ -25,7 +25,11 @@ class RedisResource extends Redis implements Resource
 
 		if(!$this->dbport)
 			$this->dbport=6379;
+
 		$this->connect($this->dbhost,$this->dbport);
+		
+		if(isset($this->dbpass))
+			$this->auth( $this->dbpass );
 	}
 }
 
