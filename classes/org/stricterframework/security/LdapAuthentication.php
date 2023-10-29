@@ -15,7 +15,7 @@ class LdapAuthentication
 	public function login($user, $password)	{
 		$ldapconn = ldap_connect($this->config['ldap']['host']) or die("Could not connect to LDAP server.");
 		$proto = ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3);
-		$ldapbind = ldap_bind($ldapconn, 'uid='.$user.','.$this->config['ldap']['users'], $password) or die ("Error trying to bind");
+		$ldapbind = ldap_bind($ldapconn, 'uid='.$user.','.$this->config['ldap']['users'], $password);
 
 		if(!$ldapbind) {
 			$this->error=LANG_LDAP_ERROR;
@@ -23,7 +23,7 @@ class LdapAuthentication
 			return false;
 		}
 
-		$ldapsearch = ldap_search($ldapconn, $this->config['ldap']['users'], "(uid=$user)" ) or die ("Error in search ");
+		$ldapsearch = ldap_search($ldapconn, $this->config['ldap']['users'], "(uid=$user)" );
 		$ldapentries = ldap_get_entries($ldapconn, $ldapsearch);
 
 		if( $ldapentries['count']=='1' ) {
